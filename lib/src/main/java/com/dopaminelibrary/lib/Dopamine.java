@@ -191,27 +191,38 @@ public class Dopamine {
             try {
                 jsonObject.put("eventID", data.getEventID());
                 jsonObject.put("build", data.getBuild());
-                StringBuilder rewardString = new StringBuilder();
-                rewardString.append("[");
-                for(String reward :  data.getRewardFunctions()) {
-                    rewardString.append(reward);
+				
+				// <akash>
+//                StringBuilder rewardString = new StringBuilder();
+//                rewardString.append("[");
+//                for(String reward :  data.getRewardFunctions()) {
+//                	jsonObject.put("rewardFunctions", reward);
+//                }
+//                rewardString.append("]");
+//                System.out.println(rewardString.toString());
+//
+//                jsonObject.put("rewardFunctions" , rewardString.toString());
+                
+                JSONArray rewardArray = new JSONArray();
+                for(String reward : data.getRewardFunctions()){
+                	rewardArray.put(reward);
                 }
-                rewardString.append("]");
+                jsonObject.put("rewardFunctions", rewardArray);
 
-
-                jsonObject.put("rewardFunctions" , rewardString.toString());
-
-
-                StringBuilder feedbackString = new StringBuilder();
-                feedbackString.append("[");
-                for(String feedback :  data.getFeedbackFunctions()) {
-                    feedbackString.append(feedback);
-                }
-                feedbackString.append("]");
-
-
-                jsonObject.put("feedbackFunctions" , feedbackString.toString());
-
+//                StringBuilder feedbackString = new StringBuilder();
+//                feedbackString.append("[");
+//                for(String feedback :  data.getFeedbackFunctions()) {
+//                    feedbackString.append(feedback);
+//                }
+//                feedbackString.append("]");
+//                System.out.println(feedbackString.toString());
+//                jsonObject.put("feedbackFunctions" , feedbackString.toString());
+                JSONArray feedbackArray = new JSONArray();
+                for(String feedback : data.getFeedbackFunctions())
+                	feedbackArray.put(feedback);
+                jsonObject.put("feedbackFunctions", feedbackArray);
+                // </akash>
+				
                 JSONArray jsonArray = new JSONArray();
                 jsonArray.put(data.getData().getJsonData());
                 jsonObject.put("metaData", jsonArray);
