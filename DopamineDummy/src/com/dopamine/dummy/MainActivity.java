@@ -1,5 +1,7 @@
 package com.dopamine.dummy;
 
+import java.io.IOException;
+
 import com.dopamine.api.Dopamine;
 
 import android.support.v7.app.ActionBarActivity;
@@ -39,7 +41,12 @@ public class MainActivity extends ActionBarActivity {
 				Dopamine.addFeedbackFunctions("feedBackFunction2");
 				Dopamine.addFeedbackFunctions("feedbackFunction3");
 		        
-				Dopamine.init();
+				try {
+					Dopamine.init(this.getApplicationContext());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		
 		final Button reinforcementButton = (Button) findViewById(R.id.reinforecement_button);
 		reinforcementButton.setOnClickListener(new View.OnClickListener() {
