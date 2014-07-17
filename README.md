@@ -8,7 +8,7 @@ You can get started with Dopamine in your Android app in just a few minutes. Her
 
 1.	Download and install this API Client.
 2.	Run the Live Example App to immediately get a feel for how to use the API.
-3.	Use the Life Example App as a template for how your app can use the Dopamine API.
+3.	Use the Live Example App as a template for how your app can use the Dopamine API.
 
 
 **Let’s get started!**
