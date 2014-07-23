@@ -33,7 +33,8 @@ public class Dopamine {
 	// Data objects
 	public static String appID, key, token, versionID, build;
 	private static ArrayList<String> rewardFunctions, feedbackFunctions;
-	private static ArrayList<SimpleEntry<String, String>> identity, metaData, persistentMetaData;
+	private static ArrayList<SimpleEntry<String, Object>> identity;
+	private static ArrayList<SimpleEntry<String, Object>> metaData, persistentMetaData;
 
 	private Dopamine() {
 		
@@ -42,9 +43,9 @@ public class Dopamine {
 	public static void init(Context c) throws IOException{
 		context = c;
 		if(identity == null){
-			identity = new ArrayList<SimpleEntry<String,String>>();
-			identity.add( new SimpleEntry<String, String>("ANDROID_ID", Secure.getString(c.getContentResolver(), Secure.ANDROID_ID)) );
-			identity.add( new SimpleEntry<String, String>("DEVICE_ID", getDeviceID()) );
+			identity = new ArrayList<SimpleEntry<String,Object>>();
+			identity.add( new SimpleEntry<String, Object>("ANDROID_ID", Secure.getString(c.getContentResolver(), Secure.ANDROID_ID)) );
+			identity.add( new SimpleEntry<String, Object>("DEVICE_ID", getDeviceID()) );
 		}
 		setBuild();
 		
@@ -181,12 +182,12 @@ public class Dopamine {
 		return array;
 	}
 
-	private static JSONArray simpleEntryListToJSONArray(
-			ArrayList<SimpleEntry<String, String>> list) {
+	private static JSONArray simpleEntryListToJSONArray(ArrayList<SimpleEntry<String, Object>> list) {
+		// create JSONObject to combine entries with identical keys into a single JSONObject inside of the JSONArray
 		JSONObject obj = new JSONObject();
 		try {
 
-			for (SimpleEntry<String, String> entry : list) {
+			for (SimpleEntry<String, Object> entry : list) {
 				obj.accumulate(entry.getKey(), entry.getValue());
 			}
 
@@ -199,6 +200,7 @@ public class Dopamine {
 		while (it.hasNext()) {
 			try {
 				String[] name = { it.next() };
+				// create individual objects for each metadata key
 				array.put(new JSONObject(obj, name));
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -285,16 +287,16 @@ public class Dopamine {
 
 	public static void setIdentity(String IDType, String uniqueID) {
 		if (identity == null)
-			identity = new ArrayList<SimpleEntry<String, String>>();
+			identity = new ArrayList<SimpleEntry<String, Object>>();
 
-		identity.add(new SimpleEntry<String, String>(IDType, uniqueID));
+		identity.add(new SimpleEntry<String, Object>(IDType, uniqueID));
 	}
 	public static void clearIdentity(String IDType){
 		if(identity == null)
 			return;
 
 		for(int i = 0; i < identity.size(); i++){
-			SimpleEntry< String, String> entry = identity.get(i);
+			SimpleEntry< String, Object> entry = identity.get(i);
 			if( entry.getKey().equalsIgnoreCase(IDType) ){
 				identity.remove(i);
 				return;
@@ -303,25 +305,26 @@ public class Dopamine {
 
 	}
 
-	public static void addMetaData(String key, String value) {
+	public static void addMetaData(String key, Object value) {
 		if (metaData == null)
-			metaData = new ArrayList<SimpleEntry<String, String>>();
+			metaData = new ArrayList<SimpleEntry<String, Object>>();
 
-		metaData.add(new SimpleEntry<String, String>(key, value));
+		metaData.add(new SimpleEntry<String, Object>(key, value));
 	}
 
-	public static void addPersistentMetaData(String key, String value) {
+	public static void addPersistentMetaData(String key, Object value) {
 		if (persistentMetaData == null)
-			persistentMetaData = new ArrayList<SimpleEntry<String, String>>();
+			persistentMetaData = new ArrayList<SimpleEntry<String, Object>>();
 
-		persistentMetaData.add(new SimpleEntry<String, String>(key, value));
+		persistentMetaData.add(new SimpleEntry<String, Object>(key, value));
 	}
+	
 	public static void clearPersistentMetaData(String key){
 		if (persistentMetaData == null)
 			return;
 		
 		for(int i = 0; i < persistentMetaData.size(); i++){
-			SimpleEntry<String, String> entry = persistentMetaData.get(i);
+			SimpleEntry<String, Object> entry = persistentMetaData.get(i);
 			if( entry.getKey().equalsIgnoreCase(key)){
 				persistentMetaData.remove(i);
 				return;
