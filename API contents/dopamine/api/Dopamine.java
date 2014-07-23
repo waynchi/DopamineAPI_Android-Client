@@ -85,6 +85,7 @@ public class Dopamine {
 	public static void track(String eventName) {
 		URIBuilder uri = new URIBuilder(appID);
 		new DopamineRequest().execute(getTrackRequest(eventName), uri.getURI(URIBuilder.URI.TRACK));
+		metaData.clear();
 	}
 
 	// ///////////////////////////////////
