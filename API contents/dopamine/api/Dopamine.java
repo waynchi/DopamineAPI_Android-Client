@@ -86,7 +86,6 @@ public class Dopamine {
 	public static void track(String eventName) {
 		URIBuilder uri = new URIBuilder(appID);
 		new DopamineRequest().execute(getTrackRequest(eventName), uri.getURI(URIBuilder.URI.TRACK));
-		metaData.clear();
 	}
 
 	// ///////////////////////////////////
@@ -141,6 +140,7 @@ public class Dopamine {
 				jsonObject.put("metaData", simpleEntryListToJSONArray(metaData));
 				jsonObject.accumulate("metaData", simpleEntryListToJSONArray(persistentMetaData));
 				
+				if(metaData != null) metaData.clear();
 
 				System.out.println("Tracking JSON:\n" + jsonObject);
 			} catch (JSONException e) {
@@ -162,6 +162,9 @@ public class Dopamine {
 				jsonObject.put("eventName", eventName);
 				jsonObject.put("metaData", simpleEntryListToJSONArray(metaData));
 				jsonObject.accumulate("metaData", simpleEntryListToJSONArray(persistentMetaData));
+				
+				if(metaData != null) metaData.clear();
+				
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return "0";
