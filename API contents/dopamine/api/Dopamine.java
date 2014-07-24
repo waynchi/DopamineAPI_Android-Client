@@ -106,8 +106,8 @@ public class Dopamine {
 			
 			long utcTime = System.currentTimeMillis();
 			long localTime = utcTime + TimeZone.getDefault().getOffset(utcTime);
-			jsonObject.put("UTC", utcTime);
-			jsonObject.put("localTime", localTime);
+			jsonObject.put("UTC", utcTime/1000);
+			jsonObject.put("localTime", localTime/1000);
 
 		} catch (JSONException e) {
 			e.printStackTrace();
