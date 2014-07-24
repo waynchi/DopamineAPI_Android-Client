@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -102,6 +103,11 @@ public class Dopamine {
 			jsonObject.put("versionID", versionID);
 			jsonObject.put("identity", simpleEntryListToJSONArray(identity));
 			jsonObject.put("build", build);
+			
+			long utcTime = System.currentTimeMillis();
+			long localTime = utcTime + TimeZone.getDefault().getOffset(utcTime);
+			jsonObject.put("UTC", utcTime);
+			jsonObject.put("localTime", localTime);
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -109,6 +115,13 @@ public class Dopamine {
 		}
 
 		return jsonObject;
+	}
+	
+	private long getCurrentTime(){
+		long time = System.currentTimeMillis();
+		TimeZone timeZone = TimeZone.getDefault();
+		time += timeZone.getOffset(time);
+		return time;
 	}
 
 	private static String getInitRequest() {
