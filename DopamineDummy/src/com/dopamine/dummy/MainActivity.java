@@ -4,8 +4,9 @@ import java.io.IOException;
 
 import com.dopamine.api.Dopamine;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,7 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
 	private static Context context;
 	@Override
@@ -95,7 +96,7 @@ public class MainActivity extends ActionBarActivity {
 		
 		final TextView textView = (TextView) findViewById(R.id.reinforecement_message);
 		textView.setText("Red=reward, Blue=feedback");
-		
+		textView.setTextColor(Color.BLACK);
 		
 	}
 	

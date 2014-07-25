@@ -11,13 +11,13 @@
 
    <Button
         android:id="@+id/reinforecement_button"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Reinforce" />
     
     <Button
         android:id="@+id/tracking_button"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Track" />
     
