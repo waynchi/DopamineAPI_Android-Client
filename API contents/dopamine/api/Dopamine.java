@@ -132,6 +132,8 @@ public class Dopamine {
 				jsonObject.put("rewardFunctions", listToJSONArray(rewardFunctions));
 				jsonObject.put("feedbackFunctions", listToJSONArray(feedbackFunctions));
 
+				if(metaData != null) metaData.clear();
+
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return "0";
