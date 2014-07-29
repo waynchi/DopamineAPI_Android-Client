@@ -18,6 +18,7 @@ public class URIBuilder {
         REWARD
     }
 
+//    private final String uri = "https://staging.usedopamine.com/v2/app/";
     private final String uri = "https://api.usedopamine.com/v2/app/";
 
 

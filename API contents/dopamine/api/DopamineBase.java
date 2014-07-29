@@ -37,7 +37,7 @@ public abstract class DopamineBase {
 	private static boolean quickTrack = true;
 	private static boolean memorySaverProcessorWaster = false;
 	
-	static boolean debugMode = false;
+	static boolean debugMode = true;
 	
 	// Data objects
 	protected static String appID, key, token, versionID, build;
@@ -61,12 +61,12 @@ public abstract class DopamineBase {
 	final static String REWARDFUNCTIONS_stringarray = "rewardFunctions";
 	final static String FEEDBACKFUNCTIONS_stringarray = "feedbackFunctions";
 	final static String ACTIONPAIRINGS_jsonarray = "actionPairings";
-	final static String ACTIONNAME_string = "actionName";
-	final static String ACTIONREINFORCERS_jsonarray = "reinforcers";
-	final static String REINFORCERNAME_string = "functionName";
-	final static String REINFORCERTYPE_string = "type";
-	final static String REINFORCERCONSTRAINTS_stringarray = "constraint";
-	final static String REINFORCEROBJECTIVES_stringarray = "objective";
+	final static String ACTIONNAME_string = "name";
+	final static String PAIREDFUNCTION_jsonarray = "pairing";
+	final static String PAIREDFUNCTIONNAME_string = "functionName";
+	final static String PAIREDFUNCTIONTYPE_string = "type";
+	final static String PAIREDFUNCTIONCONSTRAINTS_stringarray = "constraint";
+	final static String PAIREDFUNCTIONOBJECTIVES_stringarray = "objective";
 	
 	protected DopamineBase() {
 	}
@@ -75,8 +75,8 @@ public abstract class DopamineBase {
 		context = c;
 		if(identity == null){
 			identity = new HashMap<String, String>();
-			identity.put( "DEVICE_ID", getDeviceID() );
 		}
+		identity.put( "DEVICE_ID", getDeviceID() );
 		setBuild();
 		
 		URIBuilder uri = new URIBuilder(appID);
@@ -196,32 +196,35 @@ public abstract class DopamineBase {
 				jsonObject.put(FEEDBACKFUNCTIONS_stringarray, hashSetToJSONArray(feedbackFunctions));
 				
 				JSONArray actionPairings = new JSONArray();
+				jsonObject.put(ACTIONPAIRINGS_jsonarray, actionPairings);
+				
 				for(DopamineAction action : actions){
 					JSONObject actionPairingObject = new JSONObject();
-					actionPairingObject.put(ACTIONNAME_string, action.actionName);
+					actionPairings.put(actionPairingObject);
 					
-					JSONArray reinforcers = new JSONArray();
+					actionPairingObject.put(ACTIONNAME_string, action.actionName);
+					JSONArray pairedFunctions = new JSONArray();
+					actionPairingObject.put(PAIREDFUNCTION_jsonarray, pairedFunctions);
+					
 					for(String functionName : action.feedbackFunctions){
 						JSONObject function = new JSONObject();
-						function.put(REINFORCERNAME_string, functionName);
-						function.put(REINFORCERTYPE_string, "feedback");
-						function.put(REINFORCEROBJECTIVES_stringarray, new JSONArray());
-						function.put(REINFORCERCONSTRAINTS_stringarray, new JSONArray());
-						reinforcers.put(function);
+						function.put(PAIREDFUNCTIONNAME_string, functionName);
+						function.put(PAIREDFUNCTIONTYPE_string, "feedback");
+						function.put(PAIREDFUNCTIONOBJECTIVES_stringarray, new JSONArray());
+						function.put(PAIREDFUNCTIONCONSTRAINTS_stringarray, new JSONArray());
+						pairedFunctions.put(function);
 					}
 					for(String functionName : action.rewardFunctions){
 						JSONObject function = new JSONObject();
-						function.put(REINFORCERNAME_string, functionName);
-						function.put(REINFORCERTYPE_string, "feedback");
-						function.put(REINFORCEROBJECTIVES_stringarray, new JSONArray());
-						function.put(REINFORCERCONSTRAINTS_stringarray, new JSONArray());
-						reinforcers.put(function);
+						function.put(PAIREDFUNCTIONNAME_string, functionName);
+						function.put(PAIREDFUNCTIONTYPE_string, "feedback");
+						function.put(PAIREDFUNCTIONOBJECTIVES_stringarray, new JSONArray());
+						function.put(PAIREDFUNCTIONCONSTRAINTS_stringarray, new JSONArray());
+						pairedFunctions.put(function);
 					}
-					actionPairingObject.put(REINFORCEROBJECTIVES_stringarray, reinforcers);
 					
-					actionPairings.put(actionPairingObject);
 				}
-				jsonObject.put(ACTIONREINFORCERS_jsonarray, actionPairings);
+				
 				
 				if(debugMode) System.out.println("\nInit request: " + jsonObject.toString(2));
 
