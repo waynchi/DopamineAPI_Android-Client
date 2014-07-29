@@ -279,7 +279,7 @@ There are 2 available options to give you control over this process. First, you 
 Dopamine.setQuickTrack(false);  // default: true
 ...
 Dopamine.track("event");
-if( Dopamine.getTrackingQueueSize()==10 )
+if( Dopamine.getTrackingQueueSize()>10 )
     Dopamine.sendTrackingCalls();
 ```
 `getTrackingQueueSize()` returns the number of calls waiting to be sent, and `sendTrackingCalls()` pops calls from the queue and tries to send them off. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
