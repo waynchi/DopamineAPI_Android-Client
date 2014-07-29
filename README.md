@@ -122,12 +122,6 @@ public class Dopamine extends DopamineBase{
 }
 ```
 
-#######Now in your app's mainActivity's onCreate function, add the following line of code:
-<br>
-```
-Dopamine.init( getApplicationContext() );
-```
-
 <br><br>
 ####Specify your Reinforcement Functions
 <br>
@@ -155,8 +149,8 @@ You need to register your Reinforcement Functions with the API by linking them t
 public class Dopamine extends DopamineBase{
 
 // Declare Actions with their names
-        public static final DopamineAction action1 = new DopamineAction("action1");
-        public static final DopamineAction finishedTask = new DopamineAction("finishedTack");
+    public static final DopamineAction action1 = new DopamineAction("action1");
+    public static final DopamineAction finishedTask = new DopamineAction("finishedTack");
         
 // Declare Feedback Function names
     public static final String FEEDBACKFUNCTION1 = "feedbackFunction1";
@@ -177,16 +171,16 @@ public class Dopamine extends DopamineBase{
         token = "yourToken";
         
         // Pair Actions to Feedback Functions
-    action1.pairFeedback(FEEDBACKFUNCTION1);
-    action1.pairFeedback(FEEDBACKFUNCTION2);
-    finishedTask.pairFeedback(SHOWSCOREHISTORY);
-    finishedTask.pairFeedback(SHOWGOALACCOMPLISHED);
+        action1.pairFeedback(FEEDBACKFUNCTION1);
+        action1.pairFeedback(FEEDBACKFUNCTION2);
+        finishedTask.pairFeedback(SHOWSCOREHISTORY);
+        finishedTask.pairFeedback(SHOWGOALACCOMPLISHED);
     
-    // Pair Actions to Reward Functions
-    action1.pairReward(REWARDFUNCTION1);
-    action1.pairReward(SHOWTROPHY);
-    finishedTask.pairReward(SHOWTROPHY);
-    finishedTask.pairReward(GIVEHIGHFIVE);
+        // Pair Actions to Reward Functions
+        action1.pairReward(REWARDFUNCTION1);
+        action1.pairReward(SHOWTROPHY);
+        finishedTask.pairReward(SHOWTROPHY);
+        finishedTask.pairReward(GIVEHIGHFIVE);
         
         initBase(c);
     }
@@ -240,9 +234,15 @@ Initializing your app does 2 things:
 * In *Production Mode*, initializing your app checks to make sure this user identity already has a set of reinforcement parameters in the API. If the user identity you submit in the initialization call is new we create a new set of reinforcement parameters for this user.
 
 <br>
-######In your custom Dopamine class, this is performed by the line:
+######In your custom Dopamine class, this is performed by the last line in its `init()` function:
 ```
 initBase(c);
+```
+
+<br>
+######Your custom Dopaine class then needs to be initialized in your app's code, such as in the `onCreate()` method of your main activity, using the line:
+```
+Dopamine.init( getApplicationContext() );
 ```
 
 <br>
@@ -258,16 +258,37 @@ When you initialize your app for the first time, the API will create a new `buil
 Dopamine helps you track and understand how people behave inside your app. Anything can be tracked and analyzed. This event could be something as small as a button press or as big as detecting a real-life behavior from your users. To track any event, paste this code snippet in a function that runs when an event happens. 
 
 ######Copy/Paste this code into your frontend when you've detected an event you want to track:
-<br>
+
 ```
 Dopamine.track("eventName");
 ```
-<br>
+
 The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. You can analyze how and when this happens using your Developer Dashboard in the **Analyze** panel. You can also add metadata to a tracking call as such:
 ```
-Dopamine.addMetaData("dataDescription", data);  // data can be any type of JSON compatible object
+Dopamine.addMetaData("dataDescription1", data);  // data can be any type of JSON compatible object. cleared after reinforce()/track()
+Dopamine.addPersistentMetaData("dataDescription2", data);  // persistent metadata will be sent with every call
+Dopamine.clearPersistentMetaData("dataDescription2");      // clears the persistent metadata
 ```
-The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared.
+The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared until clearPersistentMetaData("key") is called.
+<br>
+######Tracking calls will be queued if no internet connection is found, and can also be queued to be sent all at once when `sendTrackingCalls()` is called
+Whenever an internet connection cannot be made, tracking calls will be queued and logged. Whenever the next tracking call is made, it will be added to the queue. Then a connection will be tried again and the tracking calls will be sent in the order they were added to the queue.
+There are 2 available options to give you control over this process. First, you can choose to store tracking calls regardless if a connection can be made or not, and then send them all in one go inside some function or at some specific time.
+```
+Dopamine.setQuickTrack(false);  // default: true
+...
+Dopamine.track("event");
+if( Dopamine.getTrackingQueueSize()==10 )
+    Dopamine.sendTrackingCalls();
+```
+`getTrackingQueueSize()` returns the number of calls waiting to be sent, and `sendTrackingCalls()` pops calls from the queue and tries to send them off. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
+<br>
+Another form of control you have is whether to keep the tracking calls in memory. The queue is written to a file every time something is added to it or a connection fails. If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
+```
+Dopamine.setMemorySaver(true);  // default: false
+```
+<br>
+##### Note: These options can be set anywhere in your code at any point in your workflow. If you don't plan on changing these options more than once, we suggest you set the options in your custom `DopamineBase` `init()` function before `initBase(c)`
 
 <br>
 ##Reinforcing your first behavior
@@ -295,7 +316,7 @@ else if(result.equals(Dopamine.SHOWTROPHY)){
 
 The `DopamineAction` from your custom `Dopamine` class are public and static, so they can be easily be access from anywhere in your project. The `reinforce()` method of a `DopamineAction` returns the name of the function that should be called in order to optimize the user's reward schedule. The resulting string/function name is also retrievable by `Dopamine.action1.resultFunction`
 
-If you want finer-grained control over exactly how each Reinforcement Function runs and what it displays, you can also specify ‘Reward Arguments’ that we can optimize to each user. Reward Arguments are extra details that specify different ways that we can display a reward within a given Reward Function. Reward Arguments are unique to each Reward Function and they’re specified on the developer dashboard. 
+If you want finer-grained control over exactly how each Reinforcement Function runs and what it displays, you can also use the metadata that was passed when a reinforcement call was made. The metadata can be used in different ways to display a reward within a given Reward Function.
 
-We return Reward Arguments in the response.rewardArgument value of the JSON response from the API. You can pass the entire value of response.rewardArgument as an argument to your Reinforcement Function specified inside the appropriate switch case in dopamine_reinforce( ).
+We return the metadata in `action.arguments`. `arguments` is an object array (Object[]), so you will have to cast the object back down to the data it was entered as. Because of this constraint, we suggest remembering in what order data was entered, or creating a custom metadata class.
 
