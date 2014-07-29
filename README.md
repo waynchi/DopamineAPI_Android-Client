@@ -284,6 +284,7 @@ if( Dopamine.getTrackingQueueSize()==10 )
 ```
 `getTrackingQueueSize()` returns the number of calls waiting to be sent, and `sendTrackingCalls()` pops calls from the queue and tries to send them off. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
 <br>
+<br>
 Another form of control you have is whether to keep the tracking calls in memory. The queue is written to a file every time something is added to it or a connection fails. If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
 ```
 Dopamine.setMemorySaver(true);  // default: false
