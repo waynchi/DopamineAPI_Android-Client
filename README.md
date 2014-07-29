@@ -271,6 +271,7 @@ Dopamine.clearPersistentMetaData("dataDescription2");      // clears the persist
 ```
 The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared until clearPersistentMetaData("key") is called.
 <br>
+<br>
 ######Tracking calls will be queued if no internet connection is found, and can also be queued to be sent all at once when `sendTrackingCalls()` is called
 Whenever an internet connection cannot be made, tracking calls will be queued and logged. Whenever the next tracking call is made, it will be added to the queue. Then a connection will be tried again and the tracking calls will be sent in the order they were added to the queue.
 There are 2 available options to give you control over this process. First, you can choose to store tracking calls regardless if a connection can be made or not, and then send them all in one go inside some function or at some specific time.
