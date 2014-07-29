@@ -6,54 +6,83 @@ import org.json.JSONObject;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.media.audiofx.BassBoost.Settings;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 /**
  * Created by pradeepbk4u on 4/18/14.
  */
-public class Dopamine {
-	public static volatile String resultFunction, result;
-	public static JSONArray arguments = new JSONArray();
-	private static Context context;
+public abstract class DopamineBase {
+	
+	static Context context;
+	
+	// Options
+	private static boolean quickTrack = true;
+	private static boolean memorySaverProcessorWaster = false;
+	
+	static boolean debugMode = false;
 	
 	// Data objects
-	public static String appID, key, token, versionID, build;
-	private static ArrayList<String> rewardFunctions, feedbackFunctions;
-	private static ArrayList<SimpleEntry<String, Object>> identity;
-	private static ArrayList<SimpleEntry<String, Object>> metaData, persistentMetaData;
+	protected static String appID, key, token, versionID, build;
+	private static LinkedHashSet<String> rewardFunctions = new LinkedHashSet<String>();
+	private static LinkedHashSet<String> feedbackFunctions = new LinkedHashSet<String>();
+	private static ArrayList<DopamineAction> actions = new ArrayList<DopamineAction>();
+	private static HashMap<String, String> identity = new HashMap<String, String>();
+	private static ArrayList<SimpleEntry<String, Object>> metaData = new ArrayList<SimpleEntry<String,Object>>();
+	private static ArrayList<SimpleEntry<String, Object>> persistentMetaData = new ArrayList<SimpleEntry<String,Object>>();
 
-	private Dopamine() {
-		
+	// JSON field names --> NAME_dataType
+	final static String IDENTITY_keyvaluearray = "identity";
+	final static String KEY_string = "key";
+	final static String TOKEN_string = "token";
+	final static String VERSIONID_string = "versionID";
+	final static String BUILD_string = "build";
+	final static String EVENTNAME_string = "eventName";
+	final static String LOCALTIME_long = "localTime";
+	final static String UTC_long = "UTC";
+	final static String METADATA_keyvaluearray = "metaData";
+	final static String REWARDFUNCTIONS_stringarray = "rewardFunctions";
+	final static String FEEDBACKFUNCTIONS_stringarray = "feedbackFunctions";
+	final static String ACTIONPAIRINGS_jsonarray = "actionPairings";
+	final static String ACTIONNAME_string = "actionName";
+	final static String ACTIONREINFORCERS_jsonarray = "reinforcers";
+	final static String REINFORCERNAME_string = "functionName";
+	final static String REINFORCERTYPE_string = "type";
+	final static String REINFORCERCONSTRAINTS_stringarray = "constraint";
+	final static String REINFORCEROBJECTIVES_stringarray = "objective";
+	
+	protected DopamineBase() {
 	}
 
-	public static void init(Context c) throws IOException{
+	protected static void initBase(Context c){
 		context = c;
 		if(identity == null){
-			identity = new ArrayList<SimpleEntry<String,Object>>();
-			identity.add( new SimpleEntry<String, Object>("ANDROID_ID", Secure.getString(c.getContentResolver(), Secure.ANDROID_ID)) );
-			identity.add( new SimpleEntry<String, Object>("DEVICE_ID", getDeviceID()) );
+			identity = new HashMap<String, String>();
+			identity.put( "DEVICE_ID", getDeviceID() );
 		}
 		setBuild();
 		
 		URIBuilder uri = new URIBuilder(appID);
 		DopamineRequest initRequest = new DopamineRequest();
 		try {
-			initRequest.execute(getInitRequest(), uri.getURI(URIBuilder.URI.INIT));
+			initRequest.execute(uri.getURI(URIBuilder.URI.INIT), getInitRequest());
 			initRequest.get();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -61,32 +90,68 @@ public class Dopamine {
 			e.printStackTrace();
 		}
 		
-		if(initRequest.error !=null || initRequest.error != "")
-			throw new IOException(initRequest.error);
-		
-		
+		if(metaData != null) metaData.clear();
 	}
 
-	public static String reinforce(String eventName) {
+	public static Object[] reinforce(DopamineAction action) {
 		URIBuilder uri = new URIBuilder(appID);
 		DopamineRequest dr = new DopamineRequest();
+		String resultFunction = null;
+		Object[] arguments = null;
 		try {
-			dr.execute(getReinforceRequest(eventName), uri.getURI(URIBuilder.URI.REWARD));
+			dr.execute(uri.getURI(URIBuilder.URI.REWARD), getReinforceRequest(action.actionName));
 			dr.get();
+			
 			resultFunction = dr.resultFunction;
-			arguments = dr.arguments;
+			arguments = metaData.toArray();
+			if(metaData != null) metaData.clear();
+			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
 		
-		return resultFunction;
+		Object[] toReturn = {resultFunction, arguments};
+		return toReturn;
 	}
 	
 	public static void track(String eventName) {
+		if( !quickTrack ){
+			DopamineRequest.addTrackingRequest( getTrackRequest(eventName) );
+		}
+		else{
+			URIBuilder uri = new URIBuilder(appID);
+			new DopamineRequest(DopamineRequest.Type.Tracking).execute(uri.getURI(URIBuilder.URI.TRACK), getTrackRequest(eventName));
+		}
+		
+		if(metaData != null) metaData.clear();
+	}
+	
+	public static int getTrackingQueueSize(){
+		return DopamineRequest.getTrackingQueueSize();
+	}
+	
+	public static void sendTrackingCalls(){
 		URIBuilder uri = new URIBuilder(appID);
-		new DopamineRequest().execute(getTrackRequest(eventName), uri.getURI(URIBuilder.URI.TRACK));
+		new DopamineRequest(DopamineRequest.Type.Tracking).execute(uri.getURI(URIBuilder.URI.TRACK));
+	}
+	
+	public static void setQuickTrack(boolean option){
+		quickTrack = option;
+		
+		// if reset, send requests currently in queue
+		if(quickTrack == true)
+			sendTrackingCalls();
+	}
+	
+	public static void setMemorySaver(boolean option){
+		memorySaverProcessorWaster = option;
+		DopamineRequest.setMemorySaverProcessorWaster(option);
+	}
+	
+	public static boolean getMemorySaverState(){
+		return memorySaverProcessorWaster;
 	}
 
 	// ///////////////////////////////////
@@ -98,16 +163,21 @@ public class Dopamine {
 	private static JSONObject getBaseRequest() {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("key", key);
-			jsonObject.put("token", token);
-			jsonObject.put("versionID", versionID);
-			jsonObject.put("identity", simpleEntryListToJSONArray(identity));
-			jsonObject.put("build", build);
 			
+			jsonObject.put(KEY_string, key);
+			jsonObject.put(TOKEN_string, token);
+			jsonObject.put(VERSIONID_string, versionID);
+			jsonObject.put(IDENTITY_keyvaluearray, hashMapToJSONArrayOfJSONObjects(identity));
+			jsonObject.put(BUILD_string, build);
+			
+
 			long utcTime = System.currentTimeMillis();
 			long localTime = utcTime + TimeZone.getDefault().getOffset(utcTime);
-			jsonObject.put("UTC", utcTime/1000);
-			jsonObject.put("localTime", localTime/1000);
+			utcTime/=1000;
+			localTime/=1000;
+			jsonObject.put(UTC_long, utcTime);
+			jsonObject.put(LOCALTIME_long, localTime);
+
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -116,23 +186,44 @@ public class Dopamine {
 
 		return jsonObject;
 	}
-	
-	private long getCurrentTime(){
-		long time = System.currentTimeMillis();
-		TimeZone timeZone = TimeZone.getDefault();
-		time += timeZone.getOffset(time);
-		return time;
-	}
 
 	private static String getInitRequest() {
 		JSONObject jsonObject = getBaseRequest();
-
+		
 		if (jsonObject != null) {
 			try {
-				jsonObject.put("rewardFunctions", listToJSONArray(rewardFunctions));
-				jsonObject.put("feedbackFunctions", listToJSONArray(feedbackFunctions));
-
-				if(metaData != null) metaData.clear();
+				jsonObject.put(REWARDFUNCTIONS_stringarray, hashSetToJSONArray(rewardFunctions));
+				jsonObject.put(FEEDBACKFUNCTIONS_stringarray, hashSetToJSONArray(feedbackFunctions));
+				
+				JSONArray actionPairings = new JSONArray();
+				for(DopamineAction action : actions){
+					JSONObject actionPairingObject = new JSONObject();
+					actionPairingObject.put(ACTIONNAME_string, action.actionName);
+					
+					JSONArray reinforcers = new JSONArray();
+					for(String functionName : action.feedbackFunctions){
+						JSONObject function = new JSONObject();
+						function.put(REINFORCERNAME_string, functionName);
+						function.put(REINFORCERTYPE_string, "feedback");
+						function.put(REINFORCEROBJECTIVES_stringarray, new JSONArray());
+						function.put(REINFORCERCONSTRAINTS_stringarray, new JSONArray());
+						reinforcers.put(function);
+					}
+					for(String functionName : action.rewardFunctions){
+						JSONObject function = new JSONObject();
+						function.put(REINFORCERNAME_string, functionName);
+						function.put(REINFORCERTYPE_string, "feedback");
+						function.put(REINFORCEROBJECTIVES_stringarray, new JSONArray());
+						function.put(REINFORCERCONSTRAINTS_stringarray, new JSONArray());
+						reinforcers.put(function);
+					}
+					actionPairingObject.put(REINFORCEROBJECTIVES_stringarray, reinforcers);
+					
+					actionPairings.put(actionPairingObject);
+				}
+				jsonObject.put(ACTIONREINFORCERS_jsonarray, actionPairings);
+				
+				if(debugMode) System.out.println("\nInit request: " + jsonObject.toString(2));
 
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -141,8 +232,6 @@ public class Dopamine {
 		} else {
 			// Error
 		}
-
-		System.out.println(jsonObject.toString());
 		return jsonObject.toString();
 	}
 
@@ -151,13 +240,11 @@ public class Dopamine {
 
 		if (jsonObject != null) {
 			try {
-				jsonObject.put("eventName", eventName);
-				jsonObject.put("metaData", simpleEntryListToJSONArray(metaData));
-				jsonObject.accumulate("metaData", simpleEntryListToJSONArray(persistentMetaData));
+				jsonObject.put(EVENTNAME_string, eventName);
+				jsonObject.put(METADATA_keyvaluearray, simpleEntryListToJSONArray(metaData));
+				jsonObject.accumulate(METADATA_keyvaluearray, simpleEntryListToJSONArray(persistentMetaData));
 				
-				if(metaData != null) metaData.clear();
-
-				System.out.println("Tracking JSON:\n" + jsonObject);
+				if(debugMode) System.out.println("\nTracking Request: " + jsonObject.toString(2));
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return "0";
@@ -174,12 +261,11 @@ public class Dopamine {
 
 		if (jsonObject != null) {
 			try {
-				jsonObject.put("eventName", eventName);
-				jsonObject.put("metaData", simpleEntryListToJSONArray(metaData));
-				jsonObject.accumulate("metaData", simpleEntryListToJSONArray(persistentMetaData));
+				jsonObject.put(EVENTNAME_string, eventName);
+				jsonObject.put(METADATA_keyvaluearray, simpleEntryListToJSONArray(metaData));
+				jsonObject.accumulate(METADATA_keyvaluearray, simpleEntryListToJSONArray(persistentMetaData));
 				
-				if(metaData != null) metaData.clear();
-				
+				if(debugMode) System.out.println("\nReinforcement Request: " + jsonObject.toString(2));
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return "0";
@@ -188,6 +274,7 @@ public class Dopamine {
 			// Error
 		}
 
+		
 		return jsonObject.toString();
 	}
 
@@ -199,6 +286,35 @@ public class Dopamine {
 			array.put(s);
 		return array;
 	}
+	
+	private static JSONArray hashSetToJSONArray(HashSet<String> set) {
+		JSONArray array = new JSONArray();
+		for (String s : set)
+			array.put(s);
+		return array;
+	}
+	
+	private static JSONArray hashMapToJSONArrayOfJSONObjects(HashMap<String, String> map){
+		JSONArray array = new JSONArray();
+		for(Entry<String, String> entry : map.entrySet()){
+			JSONObject object = new JSONObject();
+			try {
+				object.put(entry.getKey(), entry.getValue());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			array.put(object);
+		}
+		return array;
+	}
+	
+//	private static JSONArray hashedSimpleEntrySetToJSONArray(LinkedHashSet<SimpleEntry<String, String>> set) {
+//		JSONArray array = new JSONArray();
+//		for (String s : set)
+//			array.put(s);
+//		return array;
+//	}
 
 	private static JSONArray simpleEntryListToJSONArray(ArrayList<SimpleEntry<String, Object>> list) {
 		// create JSONObject to combine entries with identical keys into a single JSONObject inside of the JSONArray
@@ -234,34 +350,8 @@ public class Dopamine {
 	//
 	//////////////////////////////////////
 
-	public static void setAppID(String id) {
-		appID = id;
-	}
-
-	public static void setKey(String key) {
-		Dopamine.key = key;
-	}
-
-	public static void setToken(String token) {
-		Dopamine.token = token;
-	}
-
-	public static void setVersionID(String id) {
-		versionID = id;
-	}
-	
-	public static void setConfig(String appID, String key, String token, String versionID){
-		setAppID(appID);
-		setKey(key);
-		setToken(token);
-		setVersionID(versionID);
-	}
-
 	private static String setBuild() {
 		StringBuilder builder = new StringBuilder();
-		
-		Collections.sort(rewardFunctions);
-		Collections.sort(feedbackFunctions);
 		
 		for (String reward : rewardFunctions) {
 			builder.append(reward);
@@ -287,40 +377,31 @@ public class Dopamine {
 				data));
 	}
 
-	public static void addRewardFunctions(String... names) {
-		if (rewardFunctions == null)
-			rewardFunctions = new ArrayList<String>();
-
+	static void addRewardFunctions(String... names) {
 		for(String name : names)
 			rewardFunctions.add(name);
 	}
 
-	public static void addFeedbackFunctions(String... names) {
-		if (feedbackFunctions == null)
-			feedbackFunctions = new ArrayList<String>();
-
+	static void addFeedbackFunctions(String... names) {
 		for(String name : names)
 			feedbackFunctions.add(name);
 	}
-
-	public static void setIdentity(String IDType, String uniqueID) {
-		if (identity == null)
-			identity = new ArrayList<SimpleEntry<String, Object>>();
-
-		identity.add(new SimpleEntry<String, Object>(IDType, uniqueID));
+	
+	static void addAction(DopamineAction a){
+		actions.add(a);
 	}
-	public static void clearIdentity(String IDType){
+
+	protected static void setIdentity(String IDType, String uniqueID) {
+		if (identity == null)
+			identity = new HashMap<String, String>();
+
+		identity.put( IDType, uniqueID );
+	}
+	protected static String clearIdentity(String IDType){
 		if(identity == null)
-			return;
-
-		for(int i = 0; i < identity.size(); i++){
-			SimpleEntry< String, Object> entry = identity.get(i);
-			if( entry.getKey().equalsIgnoreCase(IDType) ){
-				identity.remove(i);
-				return;
-			}
-		}
-
+			return null;
+		
+		return identity.remove(IDType);
 	}
 
 	public static void addMetaData(String key, Object value) {
@@ -332,11 +413,10 @@ public class Dopamine {
 
 	public static void addPersistentMetaData(String key, Object value) {
 		if (persistentMetaData == null)
-			persistentMetaData = new ArrayList<SimpleEntry<String, Object>>();
+			persistentMetaData = new ArrayList<SimpleEntry<String,Object>>();
 
 		persistentMetaData.add(new SimpleEntry<String, Object>(key, value));
 	}
-	
 	public static void clearPersistentMetaData(String key){
 		if (persistentMetaData == null)
 			return;
@@ -358,7 +438,7 @@ public class Dopamine {
 	//////////////////////////////////////
 	
 	
-	public static String getDeviceID() {
+	protected static String getDeviceID() {
 
 		/*String Return_DeviceID = USERNAME_and_PASSWORD.getString(DeviceID_key,"Guest");
 		return Return_DeviceID;*/
@@ -411,7 +491,7 @@ public class Dopamine {
 			// add number to string
 			m_szUniqueID += Integer.toHexString(b);
 		}
-		m_szUniqueID = m_szUniqueID.toUpperCase();
+		m_szUniqueID = m_szUniqueID.toUpperCase(Locale.ENGLISH);
 
 		return m_szUniqueID;
 

@@ -6,9 +6,9 @@ Dopamine API Android Client
 You can get started with Dopamine in your Android app in just a few minutes. Here’s how:
 
 
-1.	Download and install this API Client.
-2.	Run the Live Example App to immediately get a feel for how to use the API.
-3.	Use the Live Example App as a template for how your app can use the Dopamine API.
+1.  Download and install this API Client.
+2.  Run the Live Example App (DopamineDummy) to immediately get a feel for how to use the API.
+3.  Use the Live Example App as a template for how your app can use the Dopamine API.
 
 
 **Let’s get started!**
@@ -34,16 +34,13 @@ The API Client folder contains 2 directories:
 
 The `DopamineDummy/` direcory contains the *Live Example App*. It's a sandbox example of how one could use the Dopamine Behavior Design API. The *Live Example App* already has the API Client completely integrated and configured and it can be run immediately from your local environment and contact the API. Use it to see how the completed moving parts of the API Client interoperate and to check against your code.
 
-The `API contents/` direcory contains the minimum code to implement the API.
+The `API contents/` direcory contains the JAR file as well as the source code for the API.
 
 Inside the `API contentes/` directory you'll find:
 
 ```
  /
   dopamineAPI.jar
-  Initialization calls.png
-  Reinforcement call.png
-  Tracking Call.png
   dopamine/
     api/
         CustomSSLSocketFactory.java
@@ -59,7 +56,7 @@ Inside the `API contentes/` directory you'll find:
 It's preconfigured to run right out of the box and give you a feel for how the different parts of the API Client work together.
 <br><br>
 
-We've created this Quick Start guide and the Live Example App to give you a fast way to get the API Client running. We suggest you poke around in the *Live Example App* and see how the different parts of the `Dopamine` object and its methods interact with your app and the API. 
+We've created this Quick Start guide and the Live Example App to give you a fast way to get the API Client running. We suggest you poke around in the *Live Example App* and see how the different parts of the `MyDopamine` object and its methods interact with your app and the API. 
 
 When you're ready to use the `dopamineAPI.jar` JAR file to incorporate the API Client into your app, the rest of this document will help you understand how.
 <br>
@@ -76,8 +73,7 @@ When you're ready to use the `dopamineAPI.jar` JAR file to incorporate the API C
 Here's how you can get up and running fast:
 
 1. Add the API Client to your project
-2. Configure your app and Initialize your app
-3. Use the Dashboard to connect user actions with Reinforcement.
+2. Extend the DopamineBase class in which you will configure your app and connect actions with Reinforcement functions
 4. Send your first tracking call
 5. Send your first reinforcement call
 
@@ -108,14 +104,28 @@ Before you configure your code, you need to prep the Dashboard to receive your n
 Your `appID`, `key`, and `token` can be found on your Developer Dashboard. NEVER SHARE YOUR TOKEN WITH ANYONE! THIS IS LINKED TO YOUR BILLING INFORMATION! The `versionID` you use should be the same version name you just created on the Dashboard.
 
 <br>
-######In your app's onCreate function, add the following code:
+######In your project, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR, as shown in the following code:
+##### Note: if Eclipse is not recognizing the JAR, make sure you add the file to your build path
 <Br>
 
 ```
-Dopamine.setAppID(<<Your_App_ID>>);
-Dopamine.setToken(<<Your_App_Token>>);
-Dopamine.setKey(<<Your_App_Key>>);
-Dopamine.setVersionID(<<The_Version_Name_You_Created_On_The_Dashboard>>);
+public class Dopamine extends DopamineBase{
+    public static void init(Context c){
+        // Set Credentials
+        appID = "yourAppID";
+        versionID = "versionYouCreatedOnDashboard";
+        key = "yourKey";
+        token = "yourToken";
+        
+        initBase(c);
+    }
+}
+```
+
+#######Now in your app's mainActivity's onCreate function, add the following line of code:
+<br>
+```
+Dopamine.init( getApplicationContext() );
 ```
 
 <br><br>
@@ -125,9 +135,9 @@ The Dopamine API helps your app become habit forming by optimally reinforcing an
 
 These positive consequences can be parts of the user experience and user interface if your app that deliver a rewarding experience to users. Users respond well to rewards that appeal to their sense of community, their desire for personal gain and accomplishment, and their drive for self-fulfillment. For more information about what makes a great reward and great feedback, check out our blog at http://blog.usedopamine.com.
 
-The functions in your app that deliver rewards to users are called `Reward Functions`. Likewise the functions in your app that deliver neutral feedback to users are called `Feedback Functions`. Collectively the Reward Functions and Feedback Functions in your app are known as your `Reinforcement Functions`. You use the Dopamine API to determine which Reinforcement Function would be encourage optimal habit formation when a user has completed an action you'd like to reinforce.
+The functions in your app that deliver rewards to users are called `Reward Functions`. Likewise the functions in your app that deliver neutral feedback to users are called `Feedback Functions`. Collectively the Reward Functions and Feedback Functions in your app are known as your `Reinforcement Functions`. You use the Dopamine API to determine which Reinforcement Function would be encourage optimal habit formation when a user has completed a certain action you'd like to reinforce.
 
-Your Reinforcement Functions will be pieces of Java code that display either neutral feedback or a reward to users. Here's how to get your Reinforcement Functions registered with the API so we know which functions we can run when your users need to be reinforced:
+Your Reinforcement Functions will be pieces of Java code that display either neutral feedback or a reward to users. Here's how to get your Reinforcement Functions registered with a specific action through the API so we know which functions can run when your users need to be reinforced:
 
 <br>
 #####Create your Reinforcement Functions
@@ -137,19 +147,49 @@ Your Reinforcement Functions can be any functions that update the UX to display 
 Some of our customers have made Reward Functions that display encouraging messages to the user. Others have included in-app enhancements that get the user excited. Users respond well to rewards that appeal to their sense of community, their desire for personal gain and accomplishment, and their drive for self-fulfillment. For more information about what makes a great reward and great feedback, check out our blog at http://blog.usedopamine.com.
 
 <br>
-#####Add your Reinforcement Function names
+#####Add your Reinforcement Function names and pair them to Actions
 
-You need to register your Reinforcement Functions with the API. Use the `Dopamine.addRewardFunction()` and `Dopamine.addFeedbackFunctions()` method of the `Dopamine` object to tell the API the names of the Reinforcement Functions in your app. 
-
-The `addRewardFunction()` and `addFeedbackFunction()` methods each accept one argument. If you have more than one Reward Function or more than one Feedback Function, use the `addRewardFunction()` or `addFeedbackFunction()` method as many times as needed.
-
+You need to register your Reinforcement Functions with the API by linking them to an action. Below is an example of 2 actions that each have two feedback and two reward functions paired with them:
 <br>
-
-######In your app's onCreate method, after you've configured your client, add:
-
 ```
-Dopamine.addRewardFunctions(<<The_Name_of_a_Reward_Function_in_your_app>>);
-Dopamine.addRewardFunctions(<<The_Name_of_a_Feedback_Function_in_your_app>>);
+public class Dopamine extends DopamineBase{
+
+// Declare Actions with their names
+        public static final DopamineAction action1 = new DopamineAction("action1");
+        public static final DopamineAction finishedTask = new DopamineAction("finishedTack");
+        
+// Declare Feedback Function names
+    public static final String FEEDBACKFUNCTION1 = "feedbackFunction1";
+    public static final String FEEDBACKFUNCTION2 = "feedbackFunction2";
+    public static final String SHOWSCOREHISTORY = "showScoreHistory";
+    public static final String SHOWGOALACCOMPLISHED = "showGoalAccomplished";
+
+// Declare Reward Function names
+    public static final String REWARDFUNCTION1 = "rewardFunction1";
+    public static final String SHOWTROPHY = "showTrophy";
+    public static final String GIVEHIGHFIVE = "giveHighFive";
+        
+    public static void init(Context c){
+        // Set Credentials
+        appID = "yourAppID";
+        versionID = "versionYouCreatedOnDashboard";
+        key = "yourKey";
+        token = "yourToken";
+        
+        // Pair Actions to Feedback Functions
+    action1.pairFeedback(FEEDBACKFUNCTION1);
+    action1.pairFeedback(FEEDBACKFUNCTION2);
+    finishedTask.pairFeedback(SHOWSCOREHISTORY);
+    finishedTask.pairFeedback(SHOWGOALACCOMPLISHED);
+    
+    // Pair Actions to Reward Functions
+    action1.pairReward(REWARDFUNCTION1);
+    action1.pairReward(SHOWTROPHY);
+    finishedTask.pairReward(SHOWTROPHY);
+    finishedTask.pairReward(GIVEHIGHFIVE);
+        
+        initBase(c);
+    }
 ```
 
 
@@ -162,14 +202,15 @@ App Initialization should happen when a user begins a new session using your app
 
 In Development Mode (when you're making API calls with your Development Key) initialization calls do not result in new user records being specified. In Production Mode (when you're making API calls with your Production Key) initialization calls result in the creation of unique user records. These allow us to optimize reinforcement on a user-to-user basis.
 
-Whenever you've confirmed user identity on your frontend, use the `Dopamine.addIdentity( )` method to set the user's identity with the API.
+If you would like to specify your own unique criteria for identity, use the `Dopamine.addIdentity()` method to set the user's identity with the API. You can add as many identity key-value pairs as you want. If you don't want to, that's fine too.
+A default feature of the API is that a unique identity generated by hashing the DeviceID, AndroidID, WiFi MAC address, and Bluetooth MAC address together.
 
-######In your app's onCreate method, after you've used `Dopamine.addRewardFunction()`, add:
+######In your custom implementation of the DopamineBase (`Dopamine`), you can add to the `init()` function before `initBase(c)`:
 
 <br>
 
 ```
-Dopamine.setIdentity(<<IDType>>, <<ID_Value>>);
+setIdentity("IDtype", "IDvalue");
 ```
 <br>
 Here's what Identity types can be used and their associated constraints:
@@ -179,13 +220,12 @@ Here's what Identity types can be used and their associated constraints:
 |User ID # | "userID" |123456789 | Can be any alphanumeric |
 |Email Address| "email" | "ramsay@usedopamine.com"|Can be any alphanumeric |
 |MAC Address| "mac" | "AB:CD:EF:GH:IJ"|Include colons in address|
-|Android ID| "androidID" | "254137A4F0503B16"|[Instructions here](http://stackoverflow.com/questions/2785485/is-there-a-unique-android-device-id) |
 |OAuth Token| "oauth" | "nnch734d00sl2jdk"| |
 
 <br>
 ######For example:
 ```
-Dopamine.setIdentity("androidID", "254137A4F0503B16");
+Dopamine.setIdentity("email", "JohnDoepamine@puns.com");
 ```
 <br>
 
@@ -200,13 +240,10 @@ Initializing your app does 2 things:
 * In *Production Mode*, initializing your app checks to make sure this user identity already has a set of reinforcement parameters in the API. If the user identity you submit in the initialization call is new we create a new set of reinforcement parameters for this user.
 
 <br>
-######In your app's onCreate method, after you've used `Dopamine.setIdentity()`, add:
+######In your custom Dopamine class, this is performed by the line:
 ```
-Dopamine.init(this.getApplicationContext());
+initBase(c);
 ```
-
-#####Remember: only call `Dopamine.init()` after you've used `Dopamine.setIdentity()` to establish user identity.
-
 
 <br>
 ##Now run your app!
@@ -214,24 +251,6 @@ Dopamine.init(this.getApplicationContext());
 When you initialize your app for the first time, the API will create a new `build` that corresponds with the unique combination of Reinforcement Functions in your app. Any time you use different Reinforcement Functions the API will create a new `build`. If your new `build` contains Reinforcement Functions from a previous `build` the API will try and inherit some of the properties from the old `build`.
 
 <hr>
-##Use the Dashboard to connect user actions with Reinforcement.
-<br>
-Now that your app is initialized and a new `build` has been created, your next step is to associate the actions you'd like to reinforce with the Reinforcement Functions in your app. Actions that you'd like to reinforce can be paired with many Reinforcement Functions, and a given Reinforcement Function can be paired to many actions. Your first step is to use the Dashboard to tell the API the names of your reinforceble actions.
-<br><br>
-######To create a reinforceble action and pair it to a Reinforcement Function:
-<br>
-1. Log into your Developer Dashboard and access the **Design** panel in the navbar
-2. Click on the name of the `build` you want to work in.
-3. Click the green **Add a new reinforced action** button
-4. Give your new action a name. This is what you'll use in the code in your app to describe the action with. *Alphanumeric only.*
-5. Click the **Associate a new Feedback Function** button to pair your action to a Feedback Function. Select the Feedback Function you want to pair to using the drop-down box. When you've selected the Feedback Function you want, click the **Add this function** button.
-6. Repeat step 5 with your Reward Functions.
-7. You can optionally add notes that describe this action. These can be information about its trigger and the action itself.
-8. When you're ready click the green **Save Changes** button to commit these changes.
-
-Now your new action is paired to your Reinforcement Functions!
-
-<br>
 
 ##Tracking your first event
 
@@ -241,10 +260,14 @@ Dopamine helps you track and understand how people behave inside your app. Anyth
 ######Copy/Paste this code into your frontend when you've detected an event you want to track:
 <br>
 ```
-Dopamine.track(<<eventName>>);
+Dopamine.track("eventName");
 ```
 <br>
-The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. You can analyze how and when this happens using your Developer Dashboard in the **Analyze** panel.
+The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. You can analyze how and when this happens using your Developer Dashboard in the **Analyze** panel. You can also add metadata to a tracking call as such:
+```
+Dopamine.addMetaData("dataDescription", data);  // data can be any type of JSON compatible object
+```
+The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared.
 
 <br>
 ##Reinforcing your first behavior
@@ -254,17 +277,23 @@ When you call the API we do some math to determine whether or not a reward or so
 ######Copy/Paste this code into your frontend when you've detected an event you want to reinforce:
 
 ```
-String result = Dopamine.reinforce(<<actionName>>);
+String result = Dopamine.action1.reinforce();
 
-if(result.equals(<<The_Name_of_one_of_your_Reinforcement_Functions>>)){
-	MainActivity.<<The_Name_of_one_of_your_Reinforcement_Functions>>();
+if(result.equals(Dopamine.FEEDBACKFUNCTION1)){
+  feedbackFunction1();
 } 
-else if(<<The_Name_of_some_other_Reinforcement_Functions>>)){
-	MainActivity.<<The_Name_of_some_other_Reinforcement_Functions>>();
+else if(result.equals(Dopamine.FEEDBACKFUNCTION2)){
+  feedbackFunction2();
+}
+else if(result.equals(Dopamine.REWARDFUNCTION1)){
+  rewardFunction1();
+}
+else if(result.equals(Dopamine.SHOWTROPHY)){
+  showTrophy();
 }
 ```
 
-The parameter `actionName` should match an action that you've paired to Reinforcement Functions on your Developer Dashboard. **Make sure these match identically!**
+The `DopamineAction` from your custom `Dopamine` class are public and static, so they can be easily be access from anywhere in your project. The `reinforce()` method of a `DopamineAction` returns the name of the function that should be called in order to optimize the user's reward schedule. The resulting string/function name is also retrievable by `Dopamine.action1.resultFunction`
 
 If you want finer-grained control over exactly how each Reinforcement Function runs and what it displays, you can also specify ‘Reward Arguments’ that we can optimize to each user. Reward Arguments are extra details that specify different ways that we can display a reward within a given Reward Function. Reward Arguments are unique to each Reward Function and they’re specified on the developer dashboard. 
 

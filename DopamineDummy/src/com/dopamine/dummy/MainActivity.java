@@ -1,12 +1,9 @@
 package com.dopamine.dummy;
 
-import java.io.IOException;
-
-import com.dopamine.api.Dopamine;
+import java.util.Calendar;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -25,59 +22,57 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		context = getApplicationContext();
 		
-		// signed up info on akashdes@usc.edu
-				Dopamine.setIdentity("email", "akashdes@usc.edu");
-				Dopamine.setIdentity("mac", "AB:CD:EF:GH:IJ");
-				Dopamine.setAppID("53bf3dfbf572f3b63ee628de");
-				Dopamine.setToken("493245694786310253bf3dfbf572f3b63ee628de");
-				Dopamine.setKey("db07887eec605bff3a9ae5ae5374152ced642ed5");
-				Dopamine.setVersionID("exampleApp2");
-		        
-
-				Dopamine.addRewardFunctions("rewardFunction1");
-				Dopamine.addRewardFunctions("rewardFunction2");
-
-
-				Dopamine.addFeedbackFunctions("feedBackFunction1");
-				Dopamine.addFeedbackFunctions("feedBackFunction2");
-				Dopamine.addFeedbackFunctions("feedbackFunction3");
-		        
-				try {
-					Dopamine.init(this.getApplicationContext());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		MyDopamine.init(context);
+		MyDopamine.setQuickTrack(false);  // optional
+//		MyDopamine.setMemorySaver(true);  // optional
+		
+		// Example of Persistent MetaData
+		String persistentData = null;
+		switch(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)){
+		case 1: persistentData = "Sunday"; break;
+		case 2: persistentData = "Monday"; break;
+		case 3: persistentData = "Tuesday"; break;
+		case 4: persistentData = "Wednesday"; break;
+		case 5: persistentData = "Thursday"; break;
+		case 6: persistentData = "Friday"; break;
+		default:
+			persistentData = "Saturday"; break;
+		}
+		MyDopamine.addPersistentMetaData("Day", persistentData);
+		
+		// Example of MetaData
+		MyDopamine.addMetaData("firstMetaData", 0);
 		
 		final Button reinforcementButton = (Button) findViewById(R.id.reinforecement_button);
 		reinforcementButton.setOnClickListener(new View.OnClickListener() {
 			int i = 0;
 
 			public void onClick(View v) {
-				String result = Dopamine.reinforce("reinforcedBehavior");
-//				String result = Dopamine.result;
+				// Example of MetaData
+				MyDopamine.addMetaData("reinforcementNumber", i);
+				String result = MyDopamine.clickReinforcementButton.reinforce();
 				
-				System.out.println("MainActivity result: " + result);
-				if(result.equals("feedBackFunction1")){
+				if(result.equals(MyDopamine.FEEDBACKFUNCTION1)){
 					reinforcementButton.setBackgroundColor(Color.BLUE);
 					MainActivity.feedBackFunction1();
 				} 
-				else if(result.equals("feedBackFunction2")){
+				else if(result.equals(MyDopamine.FEEDBACKFUNCTION2)){
 					reinforcementButton.setBackgroundColor(Color.BLUE);
 					MainActivity.feedBackFunction2();
 				}
-				else if(result.equalsIgnoreCase("rewardFunction1")){
+				else if(result.equalsIgnoreCase(MyDopamine.FEEDBACKFUNCTION3)){
+					reinforcementButton.setBackgroundColor(Color.BLUE);
+					MainActivity.feedBackFunction3();
+				}
+				else if(result.equalsIgnoreCase(MyDopamine.REWARDFUNCTION1)){
 					reinforcementButton.setBackgroundColor(Color.RED);
 					MainActivity.rewardFunction1();
 				}
-				else if(result.equalsIgnoreCase("rewardFunction2")){
+				else if(result.equalsIgnoreCase(MyDopamine.REWARDFUNCTION2)){
 					reinforcementButton.setBackgroundColor(Color.RED);
 					MainActivity.rewardFunction2();
 				}
-				else if(result.equalsIgnoreCase("rewardFunction3")){
-					reinforcementButton.setBackgroundColor(Color.RED);
-					MainActivity.rewardFunction3();
-				}
+				
 				
 				
 				reinforcementButton.setText("Reinforcement " + i++);
@@ -89,8 +84,14 @@ public class MainActivity extends Activity {
 			int i = 0;
 
 			public void onClick(View v) {
-				Dopamine.track("track button pushed");
+				// Example of MetaData
+				MyDopamine.addMetaData("trackingNumber", i);
+				MyDopamine.track("track button pushed");
 				trackingButton.setText("Track " + i++);
+				
+				System.out.println("Tracking queue size: " + MyDopamine.getTrackingQueueSize());
+				if(MyDopamine.getTrackingQueueSize() > 10)
+					MyDopamine.sendTrackingCalls();
 			}
 		});
 		
@@ -106,6 +107,9 @@ public class MainActivity extends Activity {
 	public static void feedBackFunction2(){
 		Toast.makeText(context, "feedBackFunction2", Toast.LENGTH_SHORT).show();
 	}
+	public static void feedBackFunction3(){
+		Toast.makeText(context, "feedBackFunction3", Toast.LENGTH_SHORT).show();
+	}
 	
 	public static void rewardFunction1(){
 		Toast.makeText(context, "rewardFunction1", Toast.LENGTH_SHORT).show();
@@ -113,9 +117,7 @@ public class MainActivity extends Activity {
 	public static void rewardFunction2(){
 		Toast.makeText(context, "rewardFunction2", Toast.LENGTH_SHORT).show();
 	}
-	public static void rewardFunction3(){
-		Toast.makeText(context, "rewardFunction3", Toast.LENGTH_SHORT).show();
-	}
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
