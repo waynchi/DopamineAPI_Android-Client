@@ -431,6 +431,7 @@ public abstract class DopamineBase {
 		if (persistentMetaData == null)
 			persistentMetaData = new ArrayList<SimpleEntry<String,Object>>();
 
+		clearPersistentMetaData(key);
 		persistentMetaData.add(new SimpleEntry<String, Object>(key, value));
 	}
 	public static void clearPersistentMetaData(String key){
