@@ -37,7 +37,7 @@ public abstract class DopamineBase {
 	private static boolean quickTrack = true;
 	private static boolean memorySaverProcessorWaster = false;
 	
-	static boolean debugMode = true;
+	static boolean debugMode = false;
 	
 	// Data objects
 	protected static String appID, key, token, versionID, build;
@@ -47,8 +47,15 @@ public abstract class DopamineBase {
 	private static HashMap<String, String> identity = new HashMap<String, String>();
 	private static ArrayList<SimpleEntry<String, Object>> metaData = new ArrayList<SimpleEntry<String,Object>>();
 	private static ArrayList<SimpleEntry<String, Object>> persistentMetaData = new ArrayList<SimpleEntry<String,Object>>();
+	private static String clientOS = "Android";
+	private static String clientOSversion = android.os.Build.VERSION.RELEASE;
+	private static String clientAPIversion = "1.1.0";
 
 	// JSON field names --> NAME_dataType
+	
+	final static String CLIENTOS_string = "ClientOS";
+	final static String CLIENTOSVERSION_string = "ClientOSVersion";
+	final static String CLIENTAPIVERSION_string = "ClientAPIVersion";
 	final static String IDENTITY_keyvaluearray = "identity";
 	final static String KEY_string = "key";
 	final static String TOKEN_string = "token";
@@ -164,6 +171,9 @@ public abstract class DopamineBase {
 		JSONObject jsonObject = new JSONObject();
 		try {
 			
+			jsonObject.put(CLIENTOS_string, clientOS);
+			jsonObject.put(CLIENTOSVERSION_string, clientOSversion);
+			jsonObject.put(CLIENTAPIVERSION_string, clientAPIversion);
 			jsonObject.put(KEY_string, key);
 			jsonObject.put(TOKEN_string, token);
 			jsonObject.put(VERSIONID_string, versionID);
