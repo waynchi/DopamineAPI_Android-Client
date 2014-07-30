@@ -37,7 +37,7 @@ public abstract class DopamineBase {
 	private static boolean quickTrack = true;
 	private static boolean memorySaverProcessorWaster = false;
 	
-	static boolean debugMode = false;
+	static boolean debugMode = true;
 	
 	// Data objects
 	protected static String appID, key, token, versionID, build;
@@ -68,8 +68,8 @@ public abstract class DopamineBase {
 	final static String REWARDFUNCTIONS_stringarray = "rewardFunctions";
 	final static String FEEDBACKFUNCTIONS_stringarray = "feedbackFunctions";
 	final static String ACTIONPAIRINGS_jsonarray = "actionPairings";
-	final static String ACTIONNAME_string = "name";
-	final static String PAIREDFUNCTION_jsonarray = "pairing";
+	final static String ACTIONNAME_string = "actionName";
+	final static String PAIREDFUNCTION_jsonarray = "reinforcers";
 	final static String PAIREDFUNCTIONNAME_string = "functionName";
 	final static String PAIREDFUNCTIONTYPE_string = "type";
 	final static String PAIREDFUNCTIONCONSTRAINTS_stringarray = "constraint";
@@ -98,6 +98,8 @@ public abstract class DopamineBase {
 		}
 		
 		if(metaData != null) metaData.clear();
+		
+		FileManager.setFileValue(FileManager.trackingFilename, "", c);
 	}
 
 	public static Object[] reinforce(DopamineAction action) {
@@ -219,7 +221,7 @@ public abstract class DopamineBase {
 					for(String functionName : action.feedbackFunctions){
 						JSONObject function = new JSONObject();
 						function.put(PAIREDFUNCTIONNAME_string, functionName);
-						function.put(PAIREDFUNCTIONTYPE_string, "feedback");
+						function.put(PAIREDFUNCTIONTYPE_string, "Feedback");
 						function.put(PAIREDFUNCTIONOBJECTIVES_stringarray, new JSONArray());
 						function.put(PAIREDFUNCTIONCONSTRAINTS_stringarray, new JSONArray());
 						pairedFunctions.put(function);
@@ -227,7 +229,7 @@ public abstract class DopamineBase {
 					for(String functionName : action.rewardFunctions){
 						JSONObject function = new JSONObject();
 						function.put(PAIREDFUNCTIONNAME_string, functionName);
-						function.put(PAIREDFUNCTIONTYPE_string, "feedback");
+						function.put(PAIREDFUNCTIONTYPE_string, "Reward");
 						function.put(PAIREDFUNCTIONOBJECTIVES_stringarray, new JSONArray());
 						function.put(PAIREDFUNCTIONCONSTRAINTS_stringarray, new JSONArray());
 						pairedFunctions.put(function);
@@ -424,7 +426,19 @@ public abstract class DopamineBase {
 		if (metaData == null)
 			metaData = new ArrayList<SimpleEntry<String, Object>>();
 
+		clearMetaData(key);
 		metaData.add(new SimpleEntry<String, Object>(key, value));
+	}
+	public static void clearMetaData(String key){
+		if(metaData == null) return;
+		
+		for(int i = 0; i < metaData.size(); i ++){
+			SimpleEntry<String, Object> entry = metaData.get(i);
+			if(entry.getKey().equalsIgnoreCase(key)){
+				metaData.remove(i);
+				return;
+			}
+		}
 	}
 
 	public static void addPersistentMetaData(String key, Object value) {

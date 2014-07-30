@@ -112,6 +112,7 @@ public class FileManager {
 
 	static Queue<String> loggedTrackingRequestsTOqueue() {
 		Queue<String> queue = new LinkedList<String>();
+//		return queue;
 		
 		FileInputStream fIn;
 		try {
@@ -141,7 +142,7 @@ public class FileManager {
 
 			reader.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return queue;
 		}
 
