@@ -364,16 +364,19 @@ public abstract class DopamineBase {
 	//////////////////////////////////////
 
 	private static String setBuild() {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder("pairings:");
 		
-		for (String reward : rewardFunctions) {
-			builder.append(reward);
-		}
+		for(DopamineAction action : actions){
+			builder.append(action.actionName);
+			
+			for (String feedback : action.feedbackFunctions) {
+				builder.append(feedback);
+			}
 
-		for (String feedback : feedbackFunctions) {
-			builder.append(feedback);
+			for (String reward : action.rewardFunctions) {
+				builder.append(reward);
+			}
 		}
-
 		build = sha1(builder.toString());
 		return build;
 	}
@@ -385,7 +388,7 @@ public abstract class DopamineBase {
 			e.printStackTrace();
 		}
 		digest.reset();
-		byte[] data = digest.digest(s.getBytes());
+		byte[] data = digest.digest( s.getBytes() );
 		return String.format("%0" + (data.length * 2) + "X", new BigInteger(1,
 				data));
 	}
