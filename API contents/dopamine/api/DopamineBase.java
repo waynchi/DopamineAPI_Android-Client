@@ -31,13 +31,13 @@ import java.util.concurrent.ExecutionException;
  */
 public abstract class DopamineBase {
 	
-	static Context context;
+	static Context context = null;
 	
 	// Options
 	private static boolean quickTrack = true;
 	private static boolean memorySaverProcessorWaster = false;
 	
-	static boolean debugMode = true;
+	protected static boolean debugMode = false;
 	
 	// Data objects
 	protected static String appID, key, token, versionID, build;
@@ -52,7 +52,6 @@ public abstract class DopamineBase {
 	private static String clientAPIversion = "1.1.0";
 
 	// JSON field names --> NAME_dataType
-	
 	final static String CLIENTOS_string = "ClientOS";
 	final static String CLIENTOSVERSION_string = "ClientOSVersion";
 	final static String CLIENTAPIVERSION_string = "ClientAPIVersion";
@@ -79,6 +78,9 @@ public abstract class DopamineBase {
 	}
 
 	protected static void initBase(Context c){
+		if(context!=null)	// already been initialized
+			return;
+		
 		context = c;
 		if(identity == null){
 			identity = new HashMap<String, String>();
@@ -99,7 +101,6 @@ public abstract class DopamineBase {
 		
 		if(metaData != null) metaData.clear();
 		
-		FileManager.setFileValue(FileManager.trackingFilename, "", c);
 	}
 
 	public static Object[] reinforce(DopamineAction action) {
