@@ -19,7 +19,7 @@ Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/Dopami
 
 <hr>
 
-##Add the API Client to Your Project
+##Add the API Client to your project
 
 <br>
 ####Import ```dopamineAPI.jar``` into your project. Give yourself a high five.
@@ -28,11 +28,9 @@ Our recommended way of installing the Dopamine API Client is to use the JAR file
 <!-- How do I import a JAR file? -->
 While we think this approach makes things really easy, we love to be transparent and we rely on the support of our community to improve the API Client. We love feedback, especially in the form of pull requests. :)
 
-##### Note: if Eclipse is not recognizing the JAR, make sure you add the file to your build path
-<br><br>
-<hr>
-<br>
-##Configure your API Client
+##### Note: if Eclipse is not recognizing the JAR, make sure you add the file to your build path.
+
+##Add your credtials to the API Client
 <br>
 ######In your project, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR, feel free to copy&paste the following code:
 
@@ -53,20 +51,14 @@ public class Dopamine extends DopamineBase{
 ```
 <br>
 Your `appID`, `key`, and `token` can be found on your [Dopamine developer dashboard](http://dev.usedopamine.com/) . NEVER SHARE YOUR TOKEN WITH ANYONE! 
-The `versionID` can be any string (i.e.'Android v4.3.121', 'iOS Clinical v7.3', 'FINAL VERISION FOR REAL THIS TIME', etc).
+The `versionID` can be any string (i.e.'Android v4.3.121', 'iOS Clinical v7.3', 'FINAL VERISION FOR REAL THIS TIME v2', etc).
 <br><br>
 
 
-##Initialize your app with the API
-<br>
-
-######In your custom Dopamine class, this is performed by the last line in its `init()` function:
-```
-initBase(c);
-```
+##Send your first initialization call
 
 <br>
-######Your custom Dopaine class then needs to be initialized in your app's code, such as in the `onCreate()` method of your main activity, using the line:
+######Initialize your custom Dopaine class in the `onCreate()` method of your app's main activity, using the line:
 ```
 Dopamine.init( getApplicationContext() );
 ```
@@ -74,50 +66,21 @@ Dopamine.init( getApplicationContext() );
 <br>
 ##Now run your app!
 <br><br>
-When you initialize your app for the first time, the API will create a new `build` that corresponds with the unique combination of Reinforcement Functions in your app. Any time you use different Reinforcement Functions the API will create a new `build`. If your new `build` contains Reinforcement Functions from a previous `build` the API will try and inherit some of the properties from the old `build`.
+<!-- Do they need any special instructions for where to look to see the http response? Is there some way to read the console from thier laptop? is it ok if they use a vertual device on thier laptop? -->
+When you initialize your app for the first time, the API will record that you created a new 'version' and 'build'. Check them out on your [devloper Dashboard](http://dev.usedopamine.com/).
 
 <hr>
 
 ##Tracking your first event
 
 <br>
-Dopamine helps you track and understand how people behave inside your app. Anything can be tracked and analyzed. This event could be something as small as a button press or as big as detecting a real-life behavior from your users. To track any event, paste this code snippet in a function that runs when an event happens. 
+Tracking events help you understand you're users and it helps the Dopamine algortoms learn how to respond to users. To track an event, paste this code so that it will run whenever the event occurs. 
 
-######Copy/Paste this code into your frontend when you've detected an event you want to track:
+######Copy/Paste this code into your app when you've detected an event you want to track:
 
 ```
 Dopamine.track("eventName");
 ```
-
-The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. You can analyze how and when this happens using your Developer Dashboard in the **Analyze** panel. You can also add metadata to a tracking call as such:
-```
-Dopamine.addMetaData("dataDescription1", data);  // data can be any type of JSON compatible object. cleared after reinforce()/track()
-Dopamine.addPersistentMetaData("dataDescription2", data);  // persistent metadata will be sent with every call
-Dopamine.clearPersistentMetaData("dataDescription2");      // clears the persistent metadata
-```
-The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared until clearPersistentMetaData("key") is called.
-<br>
-<br>
-######Tracking calls will be queued if no internet connection is found, and can also be queued to be sent all at once when `sendTrackingCalls()` is called
-Whenever an internet connection cannot be made, tracking calls will be queued and logged. Whenever the next tracking call is made, it will be added to the queue. Then a connection will be tried again and the tracking calls will be sent in the order they were added to the queue.
-There are 2 available options to give you control over this process. First, you can choose to store tracking calls regardless if a connection can be made or not, and then send them all in one go inside some function or at some specific time.
-```
-Dopamine.setQuickTrack(false);  // default: true
-...
-Dopamine.track("event");
-if( Dopamine.getTrackingQueueSize()>10 )
-    Dopamine.sendTrackingCalls();
-```
-`getTrackingQueueSize()` returns the number of calls waiting to be sent, and `sendTrackingCalls()` pops calls from the queue and tries to send them off. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
-<br>
-<br>
-Another form of control you have is whether to keep the tracking calls in memory. The queue is written to a file every time something is added to it or a connection fails. If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
-```
-Dopamine.setMemorySaver(true);  // default: false
-```
-<br>
-##### Note: These options can be set anywhere in your code at any point in your workflow. If you don't plan on changing these options more than once, we suggest you set the options in your custom `DopamineBase` `init()` function before `initBase(c)`
-
 
 ####Specify your Reinforcement Functions
 <br>
@@ -183,41 +146,6 @@ public class Dopamine extends DopamineBase{
 ```
 
 
-<br>
-####Confirm User Identity
-<br>
-Now that you've created a new `version` on your Dashboard, configured your app with your API credentials, and added your Reinforcement Functions to the `Dopamine` object, your ready to initialize your app. Initializing your app will create a new app `build` on the Dashboard. This `build` will be a property of the `version` you've specified. The Dashboard helps you to specify new user actions to reinforce using your Reinforcement Functions.
-
-App Initialization should happen when a user begins a new session using your app and you can confirm their identity. For many apps, the logical place to perform App Initialization is when a user is logging in to the app. For others, it's when users hit the first screen of the app. 
-
-In Development Mode (when you're making API calls with your Development Key) initialization calls do not result in new user records being specified. In Production Mode (when you're making API calls with your Production Key) initialization calls result in the creation of unique user records. These allow us to optimize reinforcement on a user-to-user basis.
-
-If you would like to specify your own unique criteria for identity, use the `Dopamine.addIdentity()` method to set the user's identity with the API. You can add as many identity key-value pairs as you want. If you don't want to, that's fine too.
-A default feature of the API is that a unique identity generated by hashing the DeviceID, AndroidID, WiFi MAC address, and Bluetooth MAC address together.
-
-######In your custom implementation of the DopamineBase (`Dopamine`), you can add to the `init()` function before `initBase(c)`:
-
-<br>
-
-```
-setIdentity("IDtype", "IDvalue");
-```
-<br>
-Here's what Identity types can be used and their associated constraints:
-
-| ID type |   IDType value          |   Example uniqueID    | Notes |
-|:---|:--|:----------------------|:---------------|
-|User ID # | "userID" |123456789 | Can be any alphanumeric |
-|Email Address| "email" | "ramsay@usedopamine.com"|Can be any alphanumeric |
-|MAC Address| "mac" | "AB:CD:EF:GH:IJ"|Include colons in address|
-|OAuth Token| "oauth" | "nnch734d00sl2jdk"| |
-
-<br>
-######For example:
-```
-Dopamine.setIdentity("email", "JohnDoepamine@puns.com");
-```
-<br>
 
 <br>
 ##Reinforcing your first behavior
@@ -289,4 +217,80 @@ The Dopamine API allows you to define many `versions` of your app (i.e.'Android 
 
 If you make a change to the reinforcement functions or thier pairings, the server will generate a new `build` but not a new version. Mutiple builds may be useful during develop, but we strongly recomend that you only release one build per version.
 
+<br>
+####Understanding User Identity
+<br>
+Now that you've created a new `version` on your Dashboard, configured your app with your API credentials, and added your Reinforcement Functions to the `Dopamine` object, your ready to initialize your app. Initializing your app will create a new app `build` on the Dashboard. This `build` will be a property of the `version` you've specified. The Dashboard helps you to specify new user actions to reinforce using your Reinforcement Functions.
 
+App Initialization should happen when a user begins a new session using your app and you can confirm their identity. For many apps, the logical place to perform App Initialization is when a user is logging in to the app. For others, it's when users hit the first screen of the app. 
+
+In Development Mode (when you're making API calls with your Development Key) initialization calls do not result in new user records being specified. In Production Mode (when you're making API calls with your Production Key) initialization calls result in the creation of unique user records. These allow us to optimize reinforcement on a user-to-user basis.
+
+If you would like to specify your own unique criteria for identity, use the `Dopamine.addIdentity()` method to set the user's identity with the API. You can add as many identity key-value pairs as you want. If you don't want to, that's fine too.
+A default feature of the API is that a unique identity generated by hashing the DeviceID, AndroidID, WiFi MAC address, and Bluetooth MAC address together.
+
+######In your custom implementation of the DopamineBase (`Dopamine`), you can add to the `init()` function before `initBase(c)`:
+
+<br>
+
+```
+setIdentity("IDtype", "IDvalue");
+```
+<br>
+Here's what Identity types can be used and their associated constraints:
+
+| ID type |   IDType value          |   Example uniqueID    | Notes |
+|:---|:--|:----------------------|:---------------|
+|User ID # | "userID" |123456789 | Can be any alphanumeric |
+|Email Address| "email" | "ramsay@usedopamine.com"|Can be any alphanumeric |
+|MAC Address| "mac" | "AB:CD:EF:GH:IJ"|Include colons in address|
+|OAuth Token| "oauth" | "nnch734d00sl2jdk"| |
+
+<br>
+######For example:
+```
+Dopamine.setIdentity("email", "JohnDoepamine@puns.com");
+```
+<br>
+
+##Metadata for Tracking and Reinforcement
+
+The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. You can analyze how and when this happens using your Developer Dashboard in the **Analyze** panel. You can also add metadata to a tracking call as such:
+```
+Dopamine.addMetaData("dataDescription1", data);  // data can be any type of JSON compatible object. cleared after reinforce()/track()
+Dopamine.addPersistentMetaData("dataDescription2", data);  // persistent metadata will be sent with every call
+Dopamine.clearPersistentMetaData("dataDescription2");      // clears the persistent metadata
+```
+The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared until clearPersistentMetaData("key") is called.
+<br>
+
+##Asychrynous Tracking
+<br>
+
+######Sometimes your users doesn't have internet access and API calls can't get out. Asynchrynous tracking makes sure that those calls are stored and sent the next time they do get a connecton.
+
+
+###When is the backlog of calls delivered?
+Whenever an internet connection cannot be made, tracking calls will be queued and logged. The Dopamine client will atempt to send the queued calls every time an `init()`, `track()` or `reinfore()` function is called. You can also force it to try and deliver the queued calls with `sendTrackingCalls()`.
+
+
+###What are the settings for asychrynous tracking?
+By default, calls only go in to the que if they cannot be sent imediatly. You can turn this feature off with this command:
+```
+Dopamine.setQuickTrack(false);  // default: true
+```
+But then you have to manually send the calls. Using `Dopamine.sendTrackingCalls()`. For example, this would clear the log whenever it contained more then 10 items:
+```
+Dopamine.track("event");
+if( Dopamine.getTrackingQueueSize()>10 )
+    Dopamine.sendTrackingCalls();
+```
+`getTrackingQueueSize()` returns the number of calls waiting to be sent. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
+<br>
+<br>
+also, by default the client saves the call que in two places. It stores it in the voletile memory (for speed) and it writes it to a file (for persistance). If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
+```
+Dopamine.setMemorySaver(true);  // default: false
+```
+<br>
+##### Note: These options can be set anywhere in your code at any point in your workflow. If you don't plan on changing these options more than once, we suggest you set the options in your custom `DopamineBase` `init()` function before `initBase(c)`
