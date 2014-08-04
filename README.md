@@ -5,11 +5,13 @@ Dopamine API Android Client
 
 You can get started with Dopamine in your Android app in just a few minutes. Here’s how:
 
+1. Add the API Client to your project.
+2. Copy your credtials from the [Dopamine developer dashboard](http://dev.usedopamine.com/) into the API Client.
+2. Extend the DopamineBase class in which you will configure your app and connect actions with Reinforcement functions.
+4. Send your first tracking call.
+5. Send your first reinforcement call.
 
-1.  Download and install this API Client.
-2.  Run the Live Example App (DopamineDummy) to immediately get a feel for how to use the API.
-3.  Use the Live Example App as a template for how your app can use the Dopamine API.
-
+Pro Tip: Check out [our demo app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) to see the API in action!
 
 **Let’s get started!**
 
@@ -19,24 +21,11 @@ You can get started with Dopamine in your Android app in just a few minutes. Her
 
 Our recommended way of installing the Dopamine API Client is to use the JAR file we've included in this repo. 
 
-We have included two sets of files: a completed, *Live Example App* you can import into Eclipse and run immediately, and the core client JAR file you'll need to use the API in your app.
-
 While we think this approach makes things really easy, we love to be transparent and we rely on the support of our community to improve the API Client. We love feedback, especially in the form of pull requests. :)
 
 ###Download & setup
 
 Download the API Client files in this repo. Here's what you'll find:
-
-The API Client folder contains 2 directories:
-
-1. `API contents/`
-2. `DopamineDummy/`
-
-The `DopamineDummy/` direcory contains the *Live Example App*. It's a sandbox example of how one could use the Dopamine Behavior Design API. The *Live Example App* already has the API Client completely integrated and configured and it can be run immediately from your local environment and contact the API. Use it to see how the completed moving parts of the API Client interoperate and to check against your code.
-
-The `API contents/` direcory contains the JAR file as well as the source code for the API.
-
-Inside the `API contentes/` directory you'll find:
 
 ```
  /
@@ -49,34 +38,18 @@ Inside the `API contentes/` directory you'll find:
         DopamineRequest.java
         URIBuilder.java
 ```
-<br><br>
-##Try it now:
-<br>
-####Go ahead and try the *Live Example App* now!####
-It's preconfigured to run right out of the box and give you a feel for how the different parts of the API Client work together.
-<br><br>
 
-We've created this Quick Start guide and the Live Example App to give you a fast way to get the API Client running. We suggest you poke around in the *Live Example App* and see how the different parts of the `MyDopamine` object and its methods interact with your app and the API. 
-
-When you're ready to use the `dopamineAPI.jar` JAR file to incorporate the API Client into your app, the rest of this document will help you understand how.
-<br>
+The ```dopamine/``` folder caontains everything that is compiled in the JAR file. You only need the JAR file to use the API Client, but the source is there incase you'd like to take a closer look or customize it.  
+<br><br>
+##See it in action:## [Our demo app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) is preconfigured to run right out of the box and give you a feel for how the different parts of the API Client work together.
+<br><br>
 <hr>
 <br>
 
 #Using the API Client
 <br>
-
-
-
 ##What does it take to get running?
-
 Here's how you can get up and running fast:
-
-1. Add the API Client to your project
-2. Extend the DopamineBase class in which you will configure your app and connect actions with Reinforcement functions
-4. Send your first tracking call
-5. Send your first reinforcement call
-
 <hr>
 ##Add the API Client to Your Project
 <br>
@@ -85,18 +58,6 @@ Here's how you can get up and running fast:
 <hr>
 ##Configure your API Client
 <br>
-
-####Register a new version on your Dashboard
-<br>
-The Dopamine API allows you to define many `versions` and `builds` of your app that use the API in different ways, simultaneously. Each `version` and `build` can have different actions you'd like to reinforce, and different Reinforcement Functions to use to reinforce users. There is no limit to the amount of `versions` or `builds` you can have.
-
-Before you configure your code, you need to prep the Dashboard to receive your new `version`:
-
-######Create a new `version` on the Dashboard:
-* Log on to your [Developer Dashboard](http://dev.usedopamine.com)
-* Go to the [**Design** panel](http://dev.usedopamine.com/design) using the navbar at the top
-* On the left-hand `App Versions` panel, click the green **+ create new version** button
-* Give your new version a name. This name will correspond to what your will enter in your app. **Make sure these match!**
 
 <br><br>
 ####Setting your Client Configuration:
@@ -113,7 +74,7 @@ public class Dopamine extends DopamineBase{
     public static void init(Context c){
         // Set Credentials
         appID = "yourAppID";
-        versionID = "versionYouCreatedOnDashboard";
+        versionID = "AnyStringForThisVersion";
         key = "yourKey";
         token = "yourToken";
         
@@ -321,4 +282,15 @@ The `DopamineAction` from your custom `Dopamine` class are public and static, so
 If you want finer-grained control over exactly how each Reinforcement Function runs and what it displays, you can also use the metadata that was passed when a reinforcement call was made. The metadata can be used in different ways to display a reward within a given Reward Function.
 
 We return the metadata in `action.arguments`. `arguments` is an object array (Object[]), so you will have to cast the object back down to the data it was entered as. Because of this constraint, we suggest remembering in what order data was entered, or creating a custom metadata class.
+
+
+
+#Versions and Builds
+
+####Register a new version on your Dashboard
+<br>
+The Dopamine API allows you to define many `versions` of your app (i.e.'Android v4.3.121', 'iOS Clinical v7.3', 'FINAL VERISION FOR REAL THIS TIME', etc). This way you can pool data across your versions and but still manage them independedtly. A new version is created automatically when you chage the `versionID` varaiable when extending the `DopamineBase` and then make an initialization call. 
+
+If you make a change to the reinforcement functions or thier pairings, the server will generate a new `build` but not a new version. Mutiple builds may be useful during develop, but we strongly recomend that you only release one build per version.
+
 
