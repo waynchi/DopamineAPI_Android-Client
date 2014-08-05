@@ -16,23 +16,24 @@ You can get Dopamine in your Android app in just a few minutes. Here’s how:
 Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) to see the API in action!
 
 **Let’s get started!**
-<hr>
+***
 
-##Add the API Client to your project
+##1) Add the API Client to your project  
 
-<br>
-####Import `dopamineAPI.jar` into your project. Give yourself a high five.
+####Downlaod the file `dopamineAPI.jar` from this repo. Use your IDE to import it into your project. Give yourself a high five.
 
-Our recommended way of installing the Dopamine API Client is to use the JAR file we've included in this repo. The `Dopamine/` floder contains the scourse code for `Dopamine.JAR` and you don't need it for the quickstart.
+We recomend using the JAR file we've included in this repo to install the Dopamine API Client. The `Dopamine/` floder contains the scourse code for `Dopamine.JAR` and you don't need it for the quickstart.
 <!-- How do I import a JAR file? -->
 While we think this approach makes things really easy, we love to be transparent and we rely on the support of our community to improve the API Client. We love feedback, especially in the form of pull requests. :)
 
-##### Note: if Eclipse is not recognizing the JAR, make sure you add the file to your build path.
+**Note**: if your IDE is not recognizing the JAR, make sure you add the file to your build path.
 
-##Add your credtials to the API Client
 <br>
-######In your project, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR like this:
-`
+
+##2) Add your credtials to the API Client
+
+In your project, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR like this:
+```java
 public class Dopamine extends DopamineBase{
     public static void init(Context c){
         // Set Credentials
@@ -44,41 +45,34 @@ public class Dopamine extends DopamineBase{
         initBase(c);
     }
 }
-`
-Your `appID`, `key`, and `token` can be found on your [Dopamine developer dashboard](http://dev.usedopamine.com/) . NEVER SHARE YOUR TOKEN WITH ANYONE! 
-The `versionID` can be any string (i.e.'Android v4.3.121', 'iOS Clinical v7.3', 'FINAL VERISION FOR REAL THIS TIME v2', etc).
+```
+Your `appID`, `key`, and `token` can be found on your [Dopamine developer dashboard](http://dev.usedopamine.com/).
+The `versionID` can be any string (i.e.'Android v4.3.1', 'iOS Clinical v7.3', 'FINAL VERISION2 FOR REAL THIS TIME', etc).
 <br><br>
+##3) Send your first initialization call
 
-
-##Send your first initialization call
-
-<br>
-######Initialize your custom Dopaine class in the `onCreate()` method of your app's main activity, using the line:
-`
+Initialize your custom Dopaine class in the `onCreate()` method of your app's main activity, using the line:
+```java
 Dopamine.init( getApplicationContext() );
-`
-
+```
+**Now run your app!**
 <br>
-##Now run your app!
-<br><br>
 <!-- Do they need any special instructions for where to look to see the http response? Is there some way to read the console from thier laptop? is it ok if they use a vertual device on thier laptop? -->
 When you initialize your app for the first time, the API will record that you created a new 'version' and 'build'. Check them out on your [devloper Dashboard](http://dev.usedopamine.com/).
+<br><br>
 
-<hr>
+##4) Send your first tracking call
 
-##Tracking your first event
-
-<br>
 Tracking events help you understand you're users and it helps the Dopamine algortoms learn how to respond to users. To track an event, paste this code so that it will run whenever the event occurs. 
 
-######Copy/Paste this code into your app when you've detected an event you want to track:
+call the `.track` method when you've detected an event you want to track:
 
-`
+```java
 Dopamine.track("eventName");
-`
-
-####Specify your Reinforcement Functions
-<br>
+```
+Try tracking when an button on your apps home screen is tapped. Then run your app and look for the record of the button press on your [devloper Dashboard](http://dev.usedopamine.com/).
+<br><br>
+##5) Define a Reward function
 The Dopamine API helps your app become habit forming by optimally reinforcing and rewarding your users when they complete a behavior you want to happen more often. Our behavior is shaped by its consequences – especially the positive consequences. But how and when positive consequences happen matters for forming a new habit quickly. Dopamine optimizes the timing and pattern of positive consequences (‘rewards’) and neutral consequences ('feedback') for your users. 
 
 These positive consequences can be parts of the user experience and user interface if your app that deliver a rewarding experience to users. Users respond well to rewards that appeal to their sense of community, their desire for personal gain and accomplishment, and their drive for self-fulfillment. For more information about what makes a great reward and great feedback, check out our blog at http://blog.usedopamine.com.
@@ -172,12 +166,18 @@ If you want finer-grained control over exactly how each Reinforcement Function r
 
 We return the metadata in `action.arguments`. `arguments` is an object array (Object[]), so you will have to cast the object back down to the data it was entered as. Because of this constraint, we suggest remembering in what order data was entered, or creating a custom metadata class.
 
+<hr>
 
-##What else is in here?
+<hr>
+#FAQ's
+
+<br>
+
+##What else is in this GIT?
 
 Here's whats in the GIT:
 
-`
+```
  /
   dopamineAPI.jar
   dopamine/
@@ -187,36 +187,29 @@ Here's whats in the GIT:
         Dopamine.java
         DopamineRequest.java
         URIBuilder.java
-`
+```
 
-The `dopamine/` folder caontains everything that is compiled in the JAR file. You only need the JAR file to use the API Client, but the source is there incase you'd like to take a closer look or customize it.  
+The `dopamine/` folder caontains everything that is compiled in the JAR file. You only need the JAR file to use the API Client, but the source is there incase you'd like to take a closer look or customize it.
 <br><br>
-##See it in action:## [Our demo app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) is preconfigured to run right out of the box and give you a feel for how the different parts of the API Client work together.
 
+##Can I see an example app?
+Yes! [Our demo Android app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) is preconfigured to run right out of the box and give you a feel for how the different parts of the andoid API Client work together.
+<br><br>
 
 ##What does the init() call do?
-<br>
 Initializing your app does 2 things:
 
 * In *Development Mode*, initializing your app confirms your current `version` and `build` (the specific set of Reinforcement Functions you're currently using) with the API. The API response will contain a confirmation of the information you uploaded in the initialization call.
 * In *Production Mode*, initializing your app checks to make sure this user identity already has a set of reinforcement parameters in the API. If the user identity you submit in the initialization call is new we create a new set of reinforcement parameters for this user.
+<br><br>
 
-<br>
-
-
-#Versions and Builds
-
-####Register a new version on your Dashboard
-<br>
+##What are 'Versions' and 'Builds'?
 The Dopamine API allows you to define many `versions` of your app (i.e.'Android v4.3.121', 'iOS Clinical v7.3', 'FINAL VERISION FOR REAL THIS TIME', etc). This way you can pool data across your versions and but still manage them independedtly. A new version is created automatically when you chage the `versionID` varaiable when extending the `DopamineBase` and then make an initialization call. 
 
 If you make a change to the reinforcement functions or thier pairings, the server will generate a new `build` but not a new version. Mutiple builds may be useful during develop, but we strongly recomend that you only release one build per version.
 
 <br>
-####Understanding User Identity
-<br>
-Now that you've created a new `version` on your Dashboard, configured your app with your API credentials, and added your Reinforcement Functions to the `Dopamine` object, your ready to initialize your app. Initializing your app will create a new app `build` on the Dashboard. This `build` will be a property of the `version` you've specified. The Dashboard helps you to specify new user actions to reinforce using your Reinforcement Functions.
-
+##Can I Customize User Identity?
 App Initialization should happen when a user begins a new session using your app and you can confirm their identity. For many apps, the logical place to perform App Initialization is when a user is logging in to the app. For others, it's when users hit the first screen of the app. 
 
 In Development Mode (when you're making API calls with your Development Key) initialization calls do not result in new user records being specified. In Production Mode (when you're making API calls with your Production Key) initialization calls result in the creation of unique user records. These allow us to optimize reinforcement on a user-to-user basis.
@@ -224,7 +217,7 @@ In Development Mode (when you're making API calls with your Development Key) ini
 If you would like to specify your own unique criteria for identity, use the `Dopamine.addIdentity()` method to set the user's identity with the API. You can add as many identity key-value pairs as you want. If you don't want to, that's fine too.
 A default feature of the API is that a unique identity generated by hashing the DeviceID, AndroidID, WiFi MAC address, and Bluetooth MAC address together.
 
-######In your custom implementation of the DopamineBase (`Dopamine`), you can add to the `init()` function before `initBase(c)`:
+n your custom implementation of the DopamineBase (`Dopamine`), you can add to the `init()` function before `initBase(c)`:
 
 <br>
 
@@ -259,38 +252,36 @@ Dopamine.clearPersistentMetaData("dataDescription2");      // clears the persist
 The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared until clearPersistentMetaData("key") is called.
 <br>
 
-##Asychrynous Tracking
-<br>
-
-######Sometimes your users doesn't have internet access and API calls can't get out. Asynchrynous tracking makes sure that those calls are stored and sent the next time they do get a connecton.
+##How does Asychrynous Tracking work?
+Sometimes your users doesn't have internet access and API calls can't get out. Asynchrynous tracking makes sure that those calls are stored and sent the next time they do get a connecton.
 
 
-###When is the backlog of calls delivered?
+####controling when calls are delivered
 Whenever an internet connection cannot be made, tracking calls will be queued and logged. The Dopamine client will atempt to send the queued calls every time an `init()`, `track()` or `reinfore()` function is called. You can also force it to try and deliver the queued calls with `sendTrackingCalls()`.
 
 
-###What are the settings for asychrynous tracking?
+####settings for asychrynous tracking
 By default, calls only go in to the que if they cannot be sent imediatly. You can turn this feature off with this command:
-`
+```java
 Dopamine.setQuickTrack(false);  // default: true
-`
+```
 But then you have to manually send the calls. Using `Dopamine.sendTrackingCalls()`. For example, this would clear the log whenever it contained more then 10 items:
-`
+```java
 Dopamine.track("event");
 if( Dopamine.getTrackingQueueSize()>10 )
     Dopamine.sendTrackingCalls();
-`
+```
 `getTrackingQueueSize()` returns the number of calls waiting to be sent. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
 <br>
 <br>
-also, by default the client saves the call que in two places. It stores it in the voletile memory (for speed) and it writes it to a file (for persistance). If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
-`
+Also, by default the client saves the call que in two places. It stores it in the voletile memory (for speed) and it writes it to a file (for persistance). If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
+```java
 Dopamine.setMemorySaver(true);  // default: false
-`
-<br>
-##### Note: These options can be set anywhere in your code at any point in your workflow. If you don't plan on changing these options more than once, we suggest you set the options in your custom `DopamineBase` `init()` function before `initBase(c)`
+```
+**Note**: These options can be set anywhere in your code at any point in your workflow. If you don't plan on changing these options more than once, we suggest you set the options in your custom `DopamineBase` extending `init()` function before `initBase(c)`.
 
 ##What should I track?
 
-
-
+<br><br>
+##What?! A Singleton?
+We think that this client is a great way to handle tracking and reinforcement throughout an Android aplication. But we also konw that many people [have strong feelings about singletons](http://stackoverflow.com/questions/137975/what-is-so-bad-about-singletons). You can access the Dopamine API with a custom client. The REST-like API at api.dopamine.com will record and answer any properly formated request. It will also answer improperly formatted requests with a verbose error. Email us if you want any help building your own client team-[at]-usedopamine.com. 
