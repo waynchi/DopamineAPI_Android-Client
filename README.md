@@ -13,7 +13,7 @@ Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/Dopami
 
 **Let’s get started!**
 ***
-
+#1) Initialize the API Client and run your app.
 ##1.1) Add the API Client to your project  
 
 **Downlaod the file `dopamineAPI.jar` from this repo. Use your IDE to import it into your project. Give yourself a high five.**
@@ -21,7 +21,7 @@ Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/Dopami
 **Note**: if your IDE is not recognizing the JAR, make sure you add the file to your build path.
 <br><br>
 
-##2) Add your credtials to the API Client
+##1.2) Add your credtials to the API Client
 Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR.
 **Copy&Paste this in to your project:**
 ```java
@@ -40,20 +40,19 @@ public class Dopamine extends DopamineBase{
 Your `appID`, `key`, and `token` can be found on your [Dopamine developer dashboard](http://dev.usedopamine.com/).
 The `versionID` can be any string (i.e.'Android v4.3.1', 'iOS Clinical v7.3', 'FINAL VERISION2 FOR REAL THIS TIME', etc).
 <br><br>
-##3) Initialize the client and run your app
+##1.3) Initialize the client and run your app
 In the last step, you created the `Dopamine.init()` method. You need to call that method as soon as the app boots to make the tracking and reinforcement methods available to the rest of the app. 
-
-**Paste this line inot the `onCreate()` method of your app's main activity:**
+**Copy&Paste this line into the `onCreate()` method of your app's main activity:**
 ```java
 Dopamine.init( getApplicationContext() );
 ```
-**Now run your app!**
-<br>
+<br><br>
+##1.4) Now run your app!
 <!-- Do they need any special instructions for where to look to see the http response? Is there some way to read the console from thier laptop? is it ok if they use a vertual device on thier laptop? -->
 When you initialize your app for the first time, the API will record that you created a new 'version' and 'build'. Check them out on your [devloper Dashboard](http://dev.usedopamine.com/).
 <br><br>
 
-##4) Send your first tracking call
+##2) Track your first event
 
 Tracking events help you understand you're users and it helps the Dopamine algortoms learn how to respond to users. To track an event, paste this code so that it will run whenever the event occurs. 
 
@@ -65,7 +64,8 @@ Dopamine.track("eventName");
 The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. 
 Try tracking when an button on your apps home screen is tapped. Then run your app and look for the record of the button press on your [devloper Dashboard](http://dev.usedopamine.com/).
 <br><br>
-##5) Define a Reward function
+#3) Reinforce your first action
+##3.1) Define a Reward function
 The Dopamine API helps your app become habit forming by optimally reinforcing and rewarding your users when they complete a behavior you want to happen more often. Our behavior is shaped by its consequences – especially the positive consequences. But how and when positive consequences happen matters for forming a new habit quickly. Dopamine optimizes the timing and pattern of positive consequences (‘rewards’) and neutral consequences ('feedback') for your users. 
 
 These positive consequences can be parts of the user experience and user interface if your app that deliver a rewarding experience to users. Users respond well to rewards that appeal to their sense of community, their desire for personal gain and accomplishment, and their drive for self-fulfillment. For more information about what makes a great reward and great feedback, check out our blog at http://blog.usedopamine.com.
