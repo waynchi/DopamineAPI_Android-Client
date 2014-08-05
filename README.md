@@ -3,7 +3,7 @@ Dopamine API Android Client
 
 #Quick Start
 
-You can get started with Dopamine in your Android app in just a few minutes. Here’s how:
+You can get Dopamine in your Android app in just a few minutes. Here’s how:
 
 1. Add the API Client to your project.
 2. Add your credtials to the API Client.
@@ -16,15 +16,14 @@ You can get started with Dopamine in your Android app in just a few minutes. Her
 Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) to see the API in action!
 
 **Let’s get started!**
-
 <hr>
 
 ##Add the API Client to your project
 
 <br>
-####Import ```dopamineAPI.jar``` into your project. Give yourself a high five.
+####Import `dopamineAPI.jar` into your project. Give yourself a high five.
 
-Our recommended way of installing the Dopamine API Client is to use the JAR file we've included in this repo. The ```Dopamine/``` floder contains the scourse code for ```Dopamine.JAR``` and you don't need it for the quickstart.
+Our recommended way of installing the Dopamine API Client is to use the JAR file we've included in this repo. The `Dopamine/` floder contains the scourse code for `Dopamine.JAR` and you don't need it for the quickstart.
 <!-- How do I import a JAR file? -->
 While we think this approach makes things really easy, we love to be transparent and we rely on the support of our community to improve the API Client. We love feedback, especially in the form of pull requests. :)
 
@@ -32,11 +31,8 @@ While we think this approach makes things really easy, we love to be transparent
 
 ##Add your credtials to the API Client
 <br>
-######In your project, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR, feel free to copy&paste the following code:
-
-<Br>
-
-```
+######In your project, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR like this:
+`
 public class Dopamine extends DopamineBase{
     public static void init(Context c){
         // Set Credentials
@@ -48,8 +44,7 @@ public class Dopamine extends DopamineBase{
         initBase(c);
     }
 }
-```
-<br>
+`
 Your `appID`, `key`, and `token` can be found on your [Dopamine developer dashboard](http://dev.usedopamine.com/) . NEVER SHARE YOUR TOKEN WITH ANYONE! 
 The `versionID` can be any string (i.e.'Android v4.3.121', 'iOS Clinical v7.3', 'FINAL VERISION FOR REAL THIS TIME v2', etc).
 <br><br>
@@ -59,9 +54,9 @@ The `versionID` can be any string (i.e.'Android v4.3.121', 'iOS Clinical v7.3', 
 
 <br>
 ######Initialize your custom Dopaine class in the `onCreate()` method of your app's main activity, using the line:
-```
+`
 Dopamine.init( getApplicationContext() );
-```
+`
 
 <br>
 ##Now run your app!
@@ -78,9 +73,9 @@ Tracking events help you understand you're users and it helps the Dopamine algor
 
 ######Copy/Paste this code into your app when you've detected an event you want to track:
 
-```
+`
 Dopamine.track("eventName");
-```
+`
 
 ####Specify your Reinforcement Functions
 <br>
@@ -104,7 +99,7 @@ Some of our customers have made Reward Functions that display encouraging messag
 
 You need to register your Reinforcement Functions with the API by linking them to an action. Below is an example of 2 actions that each have two feedback and two reward functions paired with them:
 <br>
-```
+`
 public class Dopamine extends DopamineBase{
 
 // Declare Actions with their names
@@ -143,7 +138,7 @@ public class Dopamine extends DopamineBase{
         
         initBase(c);
     }
-```
+`
 
 
 
@@ -154,7 +149,7 @@ When you call the API we do some math to determine whether or not a reward or so
 
 ######Copy/Paste this code into your frontend when you've detected an event you want to reinforce:
 
-```
+`
 String result = Dopamine.action1.reinforce();
 
 if(result.equals(Dopamine.FEEDBACKFUNCTION1)){
@@ -169,7 +164,7 @@ else if(result.equals(Dopamine.REWARDFUNCTION1)){
 else if(result.equals(Dopamine.SHOWTROPHY)){
   showTrophy();
 }
-```
+`
 
 The `DopamineAction` from your custom `Dopamine` class are public and static, so they can be easily be access from anywhere in your project. The `reinforce()` method of a `DopamineAction` returns the name of the function that should be called in order to optimize the user's reward schedule. The resulting string/function name is also retrievable by `Dopamine.action1.resultFunction`
 
@@ -178,11 +173,11 @@ If you want finer-grained control over exactly how each Reinforcement Function r
 We return the metadata in `action.arguments`. `arguments` is an object array (Object[]), so you will have to cast the object back down to the data it was entered as. Because of this constraint, we suggest remembering in what order data was entered, or creating a custom metadata class.
 
 
-
+##What else is in here?
 
 Here's whats in the GIT:
 
-```
+`
  /
   dopamineAPI.jar
   dopamine/
@@ -192,14 +187,14 @@ Here's whats in the GIT:
         Dopamine.java
         DopamineRequest.java
         URIBuilder.java
-```
+`
 
-The ```dopamine/``` folder caontains everything that is compiled in the JAR file. You only need the JAR file to use the API Client, but the source is there incase you'd like to take a closer look or customize it.  
+The `dopamine/` folder caontains everything that is compiled in the JAR file. You only need the JAR file to use the API Client, but the source is there incase you'd like to take a closer look or customize it.  
 <br><br>
 ##See it in action:## [Our demo app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) is preconfigured to run right out of the box and give you a feel for how the different parts of the API Client work together.
 
 
-##Why do I need to use the init() call?
+##What does the init() call do?
 <br>
 Initializing your app does 2 things:
 
@@ -233,9 +228,9 @@ A default feature of the API is that a unique identity generated by hashing the 
 
 <br>
 
-```
+`
 setIdentity("IDtype", "IDvalue");
-```
+`
 <br>
 Here's what Identity types can be used and their associated constraints:
 
@@ -248,19 +243,19 @@ Here's what Identity types can be used and their associated constraints:
 
 <br>
 ######For example:
-```
+`
 Dopamine.setIdentity("email", "JohnDoepamine@puns.com");
-```
+`
 <br>
 
 ##Metadata for Tracking and Reinforcement
 
 The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. You can analyze how and when this happens using your Developer Dashboard in the **Analyze** panel. You can also add metadata to a tracking call as such:
-```
+`
 Dopamine.addMetaData("dataDescription1", data);  // data can be any type of JSON compatible object. cleared after reinforce()/track()
 Dopamine.addPersistentMetaData("dataDescription2", data);  // persistent metadata will be sent with every call
 Dopamine.clearPersistentMetaData("dataDescription2");      // clears the persistent metadata
-```
+`
 The metadata will be sent with any reinforcement or tracking call, and will be cleared once it is sent. Persistent metadata will also be sent with any reinforcement or tracking call, but will not be cleared until clearPersistentMetaData("key") is called.
 <br>
 
@@ -276,21 +271,26 @@ Whenever an internet connection cannot be made, tracking calls will be queued an
 
 ###What are the settings for asychrynous tracking?
 By default, calls only go in to the que if they cannot be sent imediatly. You can turn this feature off with this command:
-```
+`
 Dopamine.setQuickTrack(false);  // default: true
-```
+`
 But then you have to manually send the calls. Using `Dopamine.sendTrackingCalls()`. For example, this would clear the log whenever it contained more then 10 items:
-```
+`
 Dopamine.track("event");
 if( Dopamine.getTrackingQueueSize()>10 )
     Dopamine.sendTrackingCalls();
-```
+`
 `getTrackingQueueSize()` returns the number of calls waiting to be sent. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
 <br>
 <br>
 also, by default the client saves the call que in two places. It stores it in the voletile memory (for speed) and it writes it to a file (for persistance). If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
-```
+`
 Dopamine.setMemorySaver(true);  // default: false
-```
+`
 <br>
 ##### Note: These options can be set anywhere in your code at any point in your workflow. If you don't plan on changing these options more than once, we suggest you set the options in your custom `DopamineBase` `init()` function before `initBase(c)`
+
+##What should I track?
+
+
+
