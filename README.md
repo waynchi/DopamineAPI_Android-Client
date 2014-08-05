@@ -30,7 +30,7 @@ While we think this approach makes things really easy, we love to be transparent
 <br><br>
 
 ##2) Add your credtials to the API Client
-Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR. Here's how we's do it:
+Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR. Copy&Paste this in to your project:
 ```java
 public class Dopamine extends DopamineBase{
     public static void init(Context c){
