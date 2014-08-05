@@ -7,7 +7,7 @@ You can get Dopamine in your Android app in just a few minutes. Here’s how:
 
 1. Add the API Client to your project.
 2. Add your credtials to the API Client.
-3. Send your first initialization call.
+3. Initialize the API Client and run your app.
 4. Send your first tracking call.
 5. Define a Reward function.
 6. Pair your Reward functoin to an Action.
@@ -30,8 +30,7 @@ While we think this approach makes things really easy, we love to be transparent
 <br><br>
 
 ##2) Add your credtials to the API Client
-
-In your project, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR like this:
+Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR. Here's how we's do it:
 ```java
 public class Dopamine extends DopamineBase{
     public static void init(Context c){
@@ -48,8 +47,9 @@ public class Dopamine extends DopamineBase{
 Your `appID`, `key`, and `token` can be found on your [Dopamine developer dashboard](http://dev.usedopamine.com/).
 The `versionID` can be any string (i.e.'Android v4.3.1', 'iOS Clinical v7.3', 'FINAL VERISION2 FOR REAL THIS TIME', etc).
 <br><br>
-##3) Send your first initialization call
-Initializeation constructs the singleton that you will call for tracking and reinforcing. It also updates the dopamine server with a model of your app. Initialize your custom Dopaine class in the `onCreate()` method of your app's main activity, using the line:
+##3) Initialize the client and run your app
+In the last step, you created the `Dopamine.init()` method. You need to call that method as soon as the app boots to make the tracking and reinforcement methods available to the rest of the app. 
+Paste this line inot the `onCreate()` method of your app's main activity, using the line:
 ```java
 Dopamine.init( getApplicationContext() );
 ```
