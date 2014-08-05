@@ -5,32 +5,26 @@ Dopamine API Android Client
 
 You can get Dopamine in your Android app in just a few minutes. Here’s how:
 
-1. Add the API Client to your project.
-2. Add your credtials to the API Client.
-3. Initialize the API Client and run your app.
-4. Send your first tracking call.
-5. Define a Reward function.
-6. Pair your Reward functoin to an Action.
-7. Send your first reinforcement call.
+1. Initialize the API Client and run your app.
+2. Track your first event
+3. Reinforce your first action
 
 Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/DopamineAPI_Android-DemoApp) to see the API in action!
 
 **Let’s get started!**
 ***
 
-##1) Add the API Client to your project  
+##1.1) Add the API Client to your project  
 
 **Downlaod the file `dopamineAPI.jar` from this repo. Use your IDE to import it into your project. Give yourself a high five.**
-
-We recomend using the JAR file we've included in this repo to install the Dopamine API Client. The `Dopamine/` floder contains the scourse code for `Dopamine.JAR` and you don't need it for the quickstart.
-<!-- How do I import a JAR file? -->
-While we think this approach makes things really easy, we love to be transparent and we rely on the support of our community to improve the API Client. We love feedback, especially in the form of pull requests. :)
 
 **Note**: if your IDE is not recognizing the JAR, make sure you add the file to your build path.
 <br><br>
 
 ##2) Add your credtials to the API Client
-Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR. Copy&Paste this in to your project:
+Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR.
+
+**Copy&Paste this in to your project:**
 ```java
 public class Dopamine extends DopamineBase{
     public static void init(Context c){
@@ -49,7 +43,8 @@ The `versionID` can be any string (i.e.'Android v4.3.1', 'iOS Clinical v7.3', 'F
 <br><br>
 ##3) Initialize the client and run your app
 In the last step, you created the `Dopamine.init()` method. You need to call that method as soon as the app boots to make the tracking and reinforcement methods available to the rest of the app. 
-Paste this line inot the `onCreate()` method of your app's main activity, using the line:
+
+**Paste this line inot the `onCreate()` method of your app's main activity:**
 ```java
 Dopamine.init( getApplicationContext() );
 ```
