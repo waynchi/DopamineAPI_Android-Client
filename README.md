@@ -20,15 +20,14 @@ Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/Dopami
 
 ##1) Add the API Client to your project  
 
-####Downlaod the file `dopamineAPI.jar` from this repo. Use your IDE to import it into your project. Give yourself a high five.
+**Downlaod the file `dopamineAPI.jar` from this repo. Use your IDE to import it into your project. Give yourself a high five.**
 
 We recomend using the JAR file we've included in this repo to install the Dopamine API Client. The `Dopamine/` floder contains the scourse code for `Dopamine.JAR` and you don't need it for the quickstart.
 <!-- How do I import a JAR file? -->
 While we think this approach makes things really easy, we love to be transparent and we rely on the support of our community to improve the API Client. We love feedback, especially in the form of pull requests. :)
 
 **Note**: if your IDE is not recognizing the JAR, make sure you add the file to your build path.
-
-<br>
+<br><br>
 
 ##2) Add your credtials to the API Client
 
@@ -50,8 +49,7 @@ Your `appID`, `key`, and `token` can be found on your [Dopamine developer dashbo
 The `versionID` can be any string (i.e.'Android v4.3.1', 'iOS Clinical v7.3', 'FINAL VERISION2 FOR REAL THIS TIME', etc).
 <br><br>
 ##3) Send your first initialization call
-
-Initialize your custom Dopaine class in the `onCreate()` method of your app's main activity, using the line:
+Initializeation constructs the singleton that you will call for tracking and reinforcing. It also updates the dopamine server with a model of your app. Initialize your custom Dopaine class in the `onCreate()` method of your app's main activity, using the line:
 ```java
 Dopamine.init( getApplicationContext() );
 ```
@@ -94,7 +92,7 @@ Some of our customers have made Reward Functions that display encouraging messag
 
 You need to register your Reinforcement Functions with the API by linking them to an action. Below is an example of 2 actions that each have two feedback and two reward functions paired with them:
 <br>
-`
+```java
 public class Dopamine extends DopamineBase{
 
 // Declare Actions with their names
@@ -133,7 +131,7 @@ public class Dopamine extends DopamineBase{
         
         initBase(c);
     }
-`
+```
 
 
 
@@ -142,9 +140,9 @@ public class Dopamine extends DopamineBase{
 <br>
 When you call the API we do some math to determine whether or not a reward or some neutral feedback would be the best way to reinforce your user. Our API response will tell your app which Reinforcement Function to run to optimally reinforce a user. Sometimes we’ll return the name of a Reward Function, sometimes the name of a Feedback Function. Every time it will be optimized to exactly what a user needs. The name of the function we return will always be the name of a Reinforcement Function in your app.
 
-######Copy/Paste this code into your frontend when you've detected an event you want to reinforce:
+**Copy/Paste this code into your frontend when you've detected an event you want to reinforce:**
 
-`
+```java
 String result = Dopamine.action1.reinforce();
 
 if(result.equals(Dopamine.FEEDBACKFUNCTION1)){
@@ -159,7 +157,7 @@ else if(result.equals(Dopamine.REWARDFUNCTION1)){
 else if(result.equals(Dopamine.SHOWTROPHY)){
   showTrophy();
 }
-`
+```
 
 The `DopamineAction` from your custom `Dopamine` class are public and static, so they can be easily be access from anywhere in your project. The `reinforce()` method of a `DopamineAction` returns the name of the function that should be called in order to optimize the user's reward schedule. The resulting string/function name is also retrievable by `Dopamine.action1.resultFunction`
 
@@ -233,10 +231,10 @@ Here's what Identity types can be used and their associated constraints:
 |OAuth Token| "oauth" | "nnch734d00sl2jdk"| |
 
 <br>
-######For example:
-`
+For example:
+```java
 Dopamine.setIdentity("email", "JohnDoepamine@puns.com");
-`
+```
 <br>
 
 ##Can I atach metadata to Tracking and Reinforcement calls?
