@@ -22,7 +22,7 @@ if your IDE is not recognizing the JAR, make sure you add the file to your build
 <br><br>
 
 ##1.2) Add your credtials to the API Client
-Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR.
+Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` to extend `DopamineBase` from the imported JAR.
 **Copy&Paste this in to your project:**
 ```java
 public class Dopamine extends DopamineBase{
@@ -66,7 +66,24 @@ Try tracking when an button on your apps home screen is tapped. Then run your ap
 <br><br>
 <hr>
 #3) Reinforce your first action
-##3.1) Define a Reward function
+If a user is rewared for an action, they are more likely to reapeat that action. But if you reward them everytime, they quickly learn to ignore it. So when and how should you reward them?
+After a user completes a target action, use the `Dopamine.reinforce()` to ask if now is the right time to reward a user. Let's prepare your project so that you can use the `Dopamine.reinforce()` in your app.
+<br>
+##3.1) Define a "Reward function"
+
+When the API desides that it's the right time to reward a user, it triger one of your "reward functions". A reward function can be anything(app enhancement, notification, animation) that makes the user feel good. To get things started, let's make it a notification about what an awesome developer you are. 
+
+Paste this in [place that is reachable by action]:
+```java
+Awesome notification code snnipet
+```
+
+##3.2) pick an action to reinforce
+
+##3.3) Connect your action to your reward fuction
+
+##3.1) Run your app
+
 The Dopamine API helps your app become habit forming by optimally reinforcing and rewarding your users when they complete a behavior you want to happen more often. Our behavior is shaped by its consequences – especially the positive consequences. But how and when positive consequences happen matters for forming a new habit quickly. Dopamine optimizes the timing and pattern of positive consequences (‘rewards’) and neutral consequences ('feedback') for your users. 
 
 These positive consequences can be parts of the user experience and user interface if your app that deliver a rewarding experience to users. Users respond well to rewards that appeal to their sense of community, their desire for personal gain and accomplishment, and their drive for self-fulfillment. For more information about what makes a great reward and great feedback, check out our blog at http://blog.usedopamine.com.
