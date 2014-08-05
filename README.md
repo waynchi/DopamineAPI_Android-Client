@@ -23,7 +23,6 @@ Pro Tip: Check out [the Android demo app](https://github.com/DopamineLabs/Dopami
 
 ##2) Add your credtials to the API Client
 Now you neep to let the client konw a litle bit about who you are and what you're working on. To do this, create a class named `Dopamine` and extend `DopamineBase` from the imported JAR.
-
 **Copy&Paste this in to your project:**
 ```java
 public class Dopamine extends DopamineBase{
