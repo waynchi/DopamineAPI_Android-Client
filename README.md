@@ -53,129 +53,119 @@ When you initialize your app for the first time, the API will record that you cr
 <br><br>
 <hr>
 #2) Track your first event
-
-Tracking events help you understand you're users and it helps the Dopamine algortoms learn how to respond to users. To track an event, paste this code so that it will run whenever the event occurs. 
-
-call the `.track` method when you've detected an event you want to track:
-
+##2.1) Place the tracking code
+Tracking events help you understand you're users and it helps the Dopamine algortoms learn how to respond to users. 
+**To track an event, paste this code so that it will run whenever the event occurs.**
 ```java
 Dopamine.track("eventName");
 ```
 The argument, `eventName`, is a label you can use to track and analyze how and when this event happens in your app. 
-Try tracking when an button on your apps home screen is tapped. Then run your app and look for the record of the button press on your [devloper Dashboard](http://dev.usedopamine.com/).
+Try tracking when an button on your apps home screen is tapped. 
+<br><br>
+##2.2) Now Run your app!
+Run your app ans trigger the event tracking code you placed. Look for the record of the button press on your [devloper Dashboard](http://dev.usedopamine.com/).
 <br><br>
 <hr>
 #3) Reinforce your first action
-If a user is rewared for an action, they are more likely to reapeat that action. But if you reward them everytime, they quickly learn to ignore it. So when and how should you reward them?
-After a user completes a target action, use the `Dopamine.reinforce()` to ask if now is the right time to reward a user. Let's prepare your project so that you can use the `Dopamine.reinforce()` in your app.
+If a user is rewared for an action, they are more likely to reapeat that action. But if you reward them everytime, they quickly learn to ignore it. So when and how should you reward them and when should you just give them feedback?
+After a user completes a target action, use the `.reinforce()` method to ask if now is the right time to reward a user. Let's prepare your project so that you can use `.reinforce()` in your app.
 <br>
-##3.1) Define a "Reward function"
-
-When the API desides that it's the right time to reward a user, it triger one of your "reward functions". A reward function can be anything(app enhancement, notification, animation) that makes the user feel good. To get things started, let's make it a notification about what an awesome developer you are. 
-
-Paste this in [place that is reachable by action]:
+##3.1) Define your "Reinforcement Functions"
+When the API desides that it's the right time to reward a user for completing your tagerget action, it triger one of your "reward functions" and when it desides not to reward the user it triggers one of your "feedback functions
+. A reward function can be anything(app enhancement, notification, animation) that makes the user feel good. A feedback function dryly inform a user that they completed the action. These can be subtle (a button changes color, a screen advances to a summary screen) or overt (dice roll going poorly. For now, make your reward a notification about what an awesome developer you are, and make your feedback a notification that the server heard your request. 
+**Paste this in [place that is reachable by action]:**
 ```java
 Awesome notification code snnipet
 ```
+<br><br>
+##3.2) Tell the client about your reward function
+The client doesn't konw that you about your reward fucntions yet! Lets decare them in the `Dopamine` class. 
 
-##3.2) pick an action to reinforce
+Add the function decairations to your code from step 1.2 so that it looks like this:
 
-##3.3) Connect your action to your reward fuction
+```java
+public class Dopamine extends DopamineBase{
 
-##3.1) Run your app
+// Declare Feedback Function names
+    public static final String SERVERHEARDYOU = "SeverHeardYou";
 
-The Dopamine API helps your app become habit forming by optimally reinforcing and rewarding your users when they complete a behavior you want to happen more often. Our behavior is shaped by its consequences – especially the positive consequences. But how and when positive consequences happen matters for forming a new habit quickly. Dopamine optimizes the timing and pattern of positive consequences (‘rewards’) and neutral consequences ('feedback') for your users. 
+// Declare Reward Function names
+    public static final String YOUAREAWESOME = "YouAreAwesome";
+        
+    public static void init(Context c){             //  \
+        // Set Credentials                          //   |
+        appID = "yourAppID";                        //   |--This should already be 
+        versionID = "versionYouCreatedOnDashboard"; //   |--in your project.
+        key = "yourKey";                            //   |
+        token = "yourToken";                        //   |
+                                                    //   |
+        initBase(c);                                //  /
+    }
+```
 
-These positive consequences can be parts of the user experience and user interface if your app that deliver a rewarding experience to users. Users respond well to rewards that appeal to their sense of community, their desire for personal gain and accomplishment, and their drive for self-fulfillment. For more information about what makes a great reward and great feedback, check out our blog at http://blog.usedopamine.com.
+<br><br>
+##3.3) Connect an action to your reward fuction
+What action do you want to reinforce? 
 
-The functions in your app that deliver rewards to users are called `Reward Functions`. Likewise the functions in your app that deliver neutral feedback to users are called `Feedback Functions`. Collectively the Reward Functions and Feedback Functions in your app are known as your `Reinforcement Functions`. You use the Dopamine API to determine which Reinforcement Function would be encourage optimal habit formation when a user has completed a certain action you'd like to reinforce.
-
-Your Reinforcement Functions will be pieces of Java code that display either neutral feedback or a reward to users. Here's how to get your Reinforcement Functions registered with a specific action through the API so we know which functions can run when your users need to be reinforced:
-
-<br>
-#####Create your Reinforcement Functions
-
-Your Reinforcement Functions can be any functions that update the UX to display a positive reward or neutral feedback to the user.
-
-Some of our customers have made Reward Functions that display encouraging messages to the user. Others have included in-app enhancements that get the user excited. Users respond well to rewards that appeal to their sense of community, their desire for personal gain and accomplishment, and their drive for self-fulfillment. For more information about what makes a great reward and great feedback, check out our blog at http://blog.usedopamine.com.
-
-<br>
-#####Add your Reinforcement Function names and pair them to Actions
-
-You need to register your Reinforcement Functions with the API by linking them to an action. Below is an example of 2 actions that each have two feedback and two reward functions paired with them:
-<br>
 ```java
 public class Dopamine extends DopamineBase{
 
 // Declare Actions with their names
-    public static final DopamineAction action1 = new DopamineAction("action1");
-    public static final DopamineAction finishedTask = new DopamineAction("finishedTack");
-        
-// Declare Feedback Function names
-    public static final String FEEDBACKFUNCTION1 = "feedbackFunction1";
-    public static final String FEEDBACKFUNCTION2 = "feedbackFunction2";
-    public static final String SHOWSCOREHISTORY = "showScoreHistory";
-    public static final String SHOWGOALACCOMPLISHED = "showGoalAccomplished";
+    public static final DopamineAction DEVELOPERTEST = new DopamineAction("DevTest");
 
-// Declare Reward Function names
-    public static final String REWARDFUNCTION1 = "rewardFunction1";
-    public static final String SHOWTROPHY = "showTrophy";
-    public static final String GIVEHIGHFIVE = "giveHighFive";
-        
-    public static void init(Context c){
-        // Set Credentials
-        appID = "yourAppID";
-        versionID = "versionYouCreatedOnDashboard";
-        key = "yourKey";
-        token = "yourToken";
-        
-        // Pair Actions to Feedback Functions
-        action1.pairFeedback(FEEDBACKFUNCTION1);
-        action1.pairFeedback(FEEDBACKFUNCTION2);
-        finishedTask.pairFeedback(SHOWSCOREHISTORY);
-        finishedTask.pairFeedback(SHOWGOALACCOMPLISHED);
-    
-        // Pair Actions to Reward Functions
-        action1.pairReward(REWARDFUNCTION1);
-        action1.pairReward(SHOWTROPHY);
-        finishedTask.pairReward(SHOWTROPHY);
-        finishedTask.pairReward(GIVEHIGHFIVE);
-        
-        initBase(c);
+// Declare Feedback Function names                                //  \
+    public static final String SERVERHEARDYOU = "SeverHeardYou";  //   |
+                                                                  //   |
+// Declare Reward Function names                                  //   |
+    public static final String YOUAREAWESOME = "YouAreAwesome";   //   |
+                                                                  //   |
+    public static void init(Context c){                           //   |
+        // Set Credentials                                        //   |
+        appID = "yourAppID";                                      //   |--This should already be 
+        versionID = "versionYouCreatedOnDashboard";               //   |--in your project.
+        key = "yourKey";                                          //   |
+        token = "yourToken";                                      //   /
+
+        // Pair Actions to Reinforcement Functions
+
+        initBase(c); 
     }
 ```
 
+<br><br>
+##3.4) Place your action logic
+What one action 
 
-
-<br>
-##Reinforcing your first behavior
-<br>
-When you call the API we do some math to determine whether or not a reward or some neutral feedback would be the best way to reinforce your user. Our API response will tell your app which Reinforcement Function to run to optimally reinforce a user. Sometimes we’ll return the name of a Reward Function, sometimes the name of a Feedback Function. Every time it will be optimized to exactly what a user needs. The name of the function we return will always be the name of a Reinforcement Function in your app.
-
-**Copy/Paste this code into your frontend when you've detected an event you want to reinforce:**
-
+**paste this code so that it will run whenever a suer completes your target action:** 
 ```java
-String result = Dopamine.action1.reinforce();
 
-if(result.equals(Dopamine.FEEDBACKFUNCTION1)){
-  feedbackFunction1();
-} 
-else if(result.equals(Dopamine.FEEDBACKFUNCTION2)){
-  feedbackFunction2();
-}
-else if(result.equals(Dopamine.REWARDFUNCTION1)){
-  rewardFunction1();
-}
-else if(result.equals(Dopamine.SHOWTROPHY)){
-  showTrophy();
-}
 ```
+The argument, `actionName`, is a label you can use to analyze how and when this event happens in your app.
+<br><br>
+##3.4) Run your app
 
-The `DopamineAction` from your custom `Dopamine` class are public and static, so they can be easily be access from anywhere in your project. The `reinforce()` method of a `DopamineAction` returns the name of the function that should be called in order to optimize the user's reward schedule. The resulting string/function name is also retrievable by `Dopamine.action1.resultFunction`
 
-If you want finer-grained control over exactly how each Reinforcement Function runs and what it displays, you can also use the metadata that was passed when a reinforcement call was made. The metadata can be used in different ways to display a reward within a given Reward Function.
 
-We return the metadata in `action.arguments`. `arguments` is an object array (Object[]), so you will have to cast the object back down to the data it was entered as. Because of this constraint, we suggest remembering in what order data was entered, or creating a custom metadata class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <hr>
 
@@ -261,8 +251,10 @@ The metadata will be attached to the next reinforcement or tracking call, and th
 ```java
 clearPersistentMetaData("key");
 ```
-<br>
+<br><br>
+##Can I provide input arguements to the reward functions?
 
+<br><br>
 ##How does Asychrynous Tracking work?
 Sometimes your users doesn't have internet access and API calls can't get out. Asynchrynous tracking makes sure that those calls are stored and sent the next time they do get a connecton.
 
@@ -284,7 +276,6 @@ if( Dopamine.getTrackingQueueSize()>10 )
 ```
 `getTrackingQueueSize()` returns the number of calls waiting to be sent. If a connection fails and there are still elements in the queue, the queue is saved to be tried again when another tracking call is made or when `sendTrackingCalls()` is called.
 <br>
-<br>
 Also, by default the client saves the call que in two places. It stores it in the voletile memory (for speed) and it writes it to a file (for persistance). If you choose to send the tracking calls manually, you may choose to store 1000's of calls at once. In order to save some memory, `setMemorySaver()` will remove the queue from memory and instead read it in from the logged file whenever it is needed. Note that this will require a little more processing power per tracking call. `getTrackingQueueSize()` will return the same size regardless of the memorySaver state.
 ```java
 Dopamine.setMemorySaver(true);  // default: false
@@ -292,7 +283,7 @@ Dopamine.setMemorySaver(true);  // default: false
 **Note**: These options can be set anywhere in your code at any point in your workflow. If you don't plan on changing these options more than once, we suggest you set the options in your custom `DopamineBase` extending `init()` function before `initBase(c)`.
 
 ##What should I track?
-
 <br><br>
 ##What?! A Singleton?
 We think that this client is a great way to handle tracking and reinforcement throughout an Android aplication. But we also konw that many people [have strong feelings about singletons](http://stackoverflow.com/questions/137975/what-is-so-bad-about-singletons). You can access the Dopamine API with a custom client. The REST-like API at api.dopamine.com will record and answer any properly formated request. It will also answer improperly formatted requests with a verbose error. Email us if you want any help building your own client team-[at]-usedopamine.com. 
+
