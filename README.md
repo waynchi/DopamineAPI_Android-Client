@@ -70,7 +70,7 @@ Run your app and trigger the event tracking code you placed. Look for the record
 If a user is rewared for an action, they are more likely to reapeat that action. But if you reward them everytime, they quickly learn to ignore it. So when and how should you reward them and when should you just give them feedback?
 After a user completes a target action, use the `.reinforce()` method to ask if now is the right time to reward a user. Let's prepare your project so that you can use `.reinforce()` in your app.
 <br>
-##3.1) Tell the client about your reinforement functions
+##3.1) Tell the client about your reinforcement functions
 When the API desides that it's the right time to reward a user for completing your tagerget action, it triger one of your "reinforcement fucntions". A "reward functions" when it's the right time to reward a user or a "feedback functions" when it desides not to reward the user. A reward function can be anything(app enhancement, notification, animation) that makes the user feel good. A feedback function dryly inform a user that they completed the action. These can be subtle (a button changes color, a screen advances to a summary screen) or overt (dice roll going poorly, slot machine wheel loosing). You don't need to write the functions yet. Just name them and let the client know that they exist. For now, make your reward a notification about what an awesome developer you are, and make your feedback a notification that the server heard your request.
 
 Declair the names of the reinforcement fucntions in your code from step 1.2 so that it looks like this:
@@ -95,11 +95,11 @@ public class Dopamine extends DopamineBase{
     }
 ```
 <br><br>
-3.2) Tell the client about your target action
+##3.2) Tell the client about your target action
 What action do you want to reinforce? 
 
 <br><br>
-##3.3) Connect an action to your reward fuction
+##3.3) Connect an action to your reinforcement function
 YOu can have lots of actions, reward functions, and feedback functions. You need to let the client know which reward/feedback fucntions are aproriet to which actions. You do this by decairing "pairings". Lets pair your action to the two reward/feedback fucntions you decaired.
 
 ```java
@@ -131,10 +131,10 @@ public class Dopamine extends DopamineBase{
 
 <br><br>
 ##3.4) Place your action logic
-Nowe we need to write the reinforcment fuctions that we told the client about and plave the code in where it will run when the target action is completed.
+Nowe we need to write the reinforcment fuctions that we told the client about and plave the code in where it will run when the target action is completed. For this quick start, pick a target action that you can quickly trigger multiple times. We'd recomend a button on your home screen. 
 
 
-**paste this code so that it will run whenever a suer completes your target action:** 
+**paste this code so that it will run whenever a user completes your target action:** 
 ```java
 
 def YouAreAwesome( ) = function to trigger notification with text "You're an awesome behavior designer!";
@@ -150,7 +150,7 @@ else if(result.equals(Dopamine.SERVERHEARDYOU)){
   SeverHeardYou();
 }
 ```
-During initialization, the client creates the object `Dopamine.DEVELOPERTEST` and gives it the method `.reinforce()`. The client also tells the server what reinforcement fucntions were paired to the `DEVELOPERTEST` action, so those are the only responses the server will ever make. 
+During initialization, the client creates the object `Dopamine.DEVELOPERTEST` and gives it the method `.reinforce()`. The client also tells the server what reinforcement fucntions were paired to the `DEVELOPERTEST` action, so it knows what responses are valid. 
 <br><br>
 ##3.4) Run your app
 
