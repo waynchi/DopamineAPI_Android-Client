@@ -96,7 +96,31 @@ public class Dopamine extends DopamineBase{
 ```
 <br><br>
 ##3.2) Tell the client about your target action
-What action do you want to reinforce? 
+Now we need to name the action that you want to reinforce and tell the client about it. For now, lets name it DevTest.
+
+**Paste in an action decairation so that your extention looks like this:**
+```java
+public class Dopamine extends DopamineBase{
+
+// Declare Actions with their names
+    public static final DopamineAction DEVELOPERTEST = new DopamineAction("DevTest");
+
+// Declare Feedback Function names                                                      //   \
+    public static final String SERVERHEARDYOU = "SeverHeardYou";                        //   |
+                                                                                        //   |
+// Declare Reward Function names                                                        //   |
+    public static final String YOUAREAWESOME = "YouAreAwesome";                         //   |
+                                                                                        //   |
+    public static void init(Context c){                                                 //   |
+        // Set Credentials                                                              //   |
+        appID = "yourAppID";                                                            //   |--This should already be 
+        versionID = "versionYouCreatedOnDashboard";                                     //   |--in your project.
+        key = "yourKey";                                                                //   |
+        token = "yourToken";                                                            //   |
+                                                                                        //   |
+        initBase(c);                                                                    //  /
+    }
+```
 
 <br><br>
 ##3.3) Connect an action to your reinforcement function
@@ -122,8 +146,8 @@ public class Dopamine extends DopamineBase{
         token = "yourToken";                                                            //   /
 
         // Pair Actions to Reinforcement Functions
-        DEVELOPERTEST.pairFeedback(SERVERHEARDYOU);
-        DEVELOPERTEST.pairReward(YOUAREAWESOME);
+        DevTest.pairFeedback(SERVERHEARDYOU);
+        DevTest.pairReward(YOUAREAWESOME);
 
         initBase(c); 
     }
@@ -141,7 +165,7 @@ def YouAreAwesome( ) = function to trigger notification with text "You're an awe
 
 def SeverHeardYou( ) = function to trigger notification with text "the server heard your API call.";
 
-String result = Dopamine.DEVELOPERTEST.reinforce();
+String result = Dopamine.DevTest.reinforce();
 
 if(result.equals(Dopamine.YOUAREAWESOME)){
   YouAreAwesome();
@@ -150,7 +174,7 @@ else if(result.equals(Dopamine.SERVERHEARDYOU)){
   SeverHeardYou();
 }
 ```
-During initialization, the client creates the object `Dopamine.DEVELOPERTEST` and gives it the method `.reinforce()`. The client also tells the server what reinforcement fucntions were paired to the `DEVELOPERTEST` action, so it knows what responses are valid. 
+During initialization, the client creates the object `Dopamine.DevTest` and gives it the method `.reinforce()`. The client also tells the server what reinforcement fucntions were paired to the `DevTest` action, so it knows what responses are valid. 
 <br><br>
 ##3.4) Run your app
 
