@@ -96,7 +96,7 @@ public class Dopamine extends DopamineBase{
 ```
 <br><br>
 ##3.2) Tell the client about your target action
-Now we need to name the action that you want to reinforce and tell the client about it. For now, lets name it DevTest.
+Now we need to name the action that you want to reinforce and tell the client about it. For now, lets name it DEVELOPERTEST.
 
 **Paste in an action decairation so that your extention looks like this:**
 ```java
@@ -106,7 +106,7 @@ public class Dopamine extends DopamineBase{
     public static final DopamineAction DEVELOPERTEST = new DopamineAction("DevTest");
 
 // Declare Feedback Function names                                                      //   \
-    public static final String SERVERHEARDYOU = "SeverHeardYou";                        //   |
+    public static final String SERVERHEARDYOU = "ServerHeardYou";                       //   |
                                                                                         //   |
 // Declare Reward Function names                                                        //   |
     public static final String YOUAREAWESOME = "YouAreAwesome";                         //   |
@@ -133,7 +133,7 @@ public class Dopamine extends DopamineBase{
     public static final DopamineAction DEVELOPERTEST = new DopamineAction("DevTest");   //   \
                                                                                         //   |
 // Declare Feedback Function names                                                      //   |
-    public static final String SERVERHEARDYOU = "SeverHeardYou";                        //   |
+    public static final String SERVERHEARDYOU = "ServerHeardYou";                       //   |
                                                                                         //   |
 // Declare Reward Function names                                                        //   |
     public static final String YOUAREAWESOME = "YouAreAwesome";                         //   |
@@ -146,35 +146,39 @@ public class Dopamine extends DopamineBase{
         token = "yourToken";                                                            //   /
 
         // Pair Actions to Reinforcement Functions
-        DevTest.pairFeedback(SERVERHEARDYOU);
-        DevTest.pairReward(YOUAREAWESOME);
+        DEVELOPERTEST.pairFeedback(SERVERHEARDYOU);
+        DEVELOPERTEST.pairReward(YOUAREAWESOME);
 
         initBase(c); 
     }
 ```
 
 <br><br>
-##3.4) Place your action logic
+##3.5) Place your action logic
 Nowe we need to write the reinforcment fuctions that we told the client about and plave the code in where it will run when the target action is completed. For this quick start, pick a target action that you can quickly trigger multiple times. We'd recomend a button on your home screen. 
 
 
 **paste this code so that it will run whenever a user completes your target action:** 
 ```java
 
-def YouAreAwesome( ) = function to trigger notification with text "You're an awesome behavior designer!";
+public void youAreAwesome( ){
+    Toast.makeText(this, "You Are Awesome!!", Toast.LENGTH_SHORT).show();
+}
 
-def SeverHeardYou( ) = function to trigger notification with text "the server heard your API call.";
+public void ServerHeardYou( ){
+    Toast.makeText(context, "The Server received your call", Toast.LENGTH_SHORT).show();
+}
 
-String result = Dopamine.DevTest.reinforce();
+String result = Dopamine.DEVELOPERTEST.reinforce();
 
 if(result.equals(Dopamine.YOUAREAWESOME)){
-  YouAreAwesome();
+  youAreAwesome();
 } 
 else if(result.equals(Dopamine.SERVERHEARDYOU)){
-  SeverHeardYou();
+  serverHeardYou();
 }
 ```
-During initialization, the client creates the object `Dopamine.DevTest` and gives it the method `.reinforce()`. The client also tells the server what reinforcement fucntions were paired to the `DevTest` action, so it knows what responses are valid. 
+During initialization, the client creates the object `Dopamine.DEVELOPERTEST` and gives it the method `.reinforce()`. The client also tells the server what reinforcement fucntions were paired to the `DEVELOPERTEST` action, so it knows what responses are valid. 
 <br><br>
 ##3.4) Run your app
 
@@ -253,7 +257,7 @@ Dopamine.setIdentity("email", "JohnDoepamine@puns.com");
 ```
 <br>
 
-##Can I atach metadata to Tracking and Reinforcement calls?
+##Can I attach metadata to Tracking and Reinforcement calls?
 
 like `'eventName'`, you can use metadata to analyse Tracking and Reinforcement calls.  Here's how to add metadata:
 ```java
