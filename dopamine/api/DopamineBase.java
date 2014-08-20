@@ -92,7 +92,6 @@ public abstract class DopamineBase {
 		DopamineRequest initRequest = new DopamineRequest();
 		try {
 			initRequest.execute(uri.getURI(URIBuilder.URI.INIT), getInitRequest());
-			initRequest.get();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
