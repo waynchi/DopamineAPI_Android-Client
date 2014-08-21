@@ -1,5 +1,19 @@
 package com.dopamine.api;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.TimeZone;
+import java.util.concurrent.ExecutionException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,21 +24,6 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
-
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by pradeepbk4u on 4/18/14.
@@ -82,21 +81,15 @@ public abstract class DopamineBase {
 			return;
 		
 		context = c;
-		if(identity == null){
+		if(identity == null)
 			identity = new HashMap<String, String>();
-		}
 		identity.put( "DEVICE_ID", getDeviceID() );
 		setBuild();
 		
 		URIBuilder uri = new URIBuilder(appID);
 		DopamineRequest initRequest = new DopamineRequest();
-		try {
-			initRequest.execute(uri.getURI(URIBuilder.URI.INIT), getInitRequest());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+		
+		initRequest.execute(uri.getURI(URIBuilder.URI.INIT), getInitRequest());
 		
 		if(metaData != null) metaData.clear();
 		
@@ -126,9 +119,8 @@ public abstract class DopamineBase {
 	}
 	
 	public static void track(String eventName) {
-		if( !quickTrack ){
+		if( !quickTrack )
 			DopamineRequest.addTrackingRequest( getTrackRequest(eventName) );
-		}
 		else{
 			URIBuilder uri = new URIBuilder(appID);
 			new DopamineRequest(DopamineRequest.Type.Tracking).execute(uri.getURI(URIBuilder.URI.TRACK), getTrackRequest(eventName));
@@ -202,7 +194,7 @@ public abstract class DopamineBase {
 	private static String getInitRequest() {
 		JSONObject jsonObject = getBaseRequest();
 		
-		if (jsonObject != null) {
+		if (jsonObject != null)
 			try {
 				jsonObject.put(REWARDFUNCTIONS_stringarray, hashSetToJSONArray(rewardFunctions));
 				jsonObject.put(FEEDBACKFUNCTIONS_stringarray, hashSetToJSONArray(feedbackFunctions));
@@ -244,7 +236,7 @@ public abstract class DopamineBase {
 				e.printStackTrace();
 				return "0";
 			}
-		} else {
+		else {
 			// Error
 		}
 		return jsonObject.toString();
@@ -253,7 +245,7 @@ public abstract class DopamineBase {
 	private static String getTrackRequest(String eventName) {
 		JSONObject jsonObject = getBaseRequest();
 
-		if (jsonObject != null) {
+		if (jsonObject != null)
 			try {
 				jsonObject.put(EVENTNAME_string, eventName);
 				jsonObject.put(METADATA_keyvaluearray, simpleEntryListToJSONArray(metaData));
@@ -264,7 +256,7 @@ public abstract class DopamineBase {
 				e.printStackTrace();
 				return "0";
 			}
-		} else {
+		else {
 			// Error
 		}
 
@@ -274,7 +266,7 @@ public abstract class DopamineBase {
 	private static String getReinforceRequest(String eventName) {
 		JSONObject jsonObject = getBaseRequest();
 
-		if (jsonObject != null) {
+		if (jsonObject != null)
 			try {
 				jsonObject.put(EVENTNAME_string, eventName);
 				jsonObject.put(METADATA_keyvaluearray, simpleEntryListToJSONArray(metaData));
@@ -285,7 +277,7 @@ public abstract class DopamineBase {
 				e.printStackTrace();
 				return "0";
 			}
-		} else {
+		else {
 			// Error
 		}
 
@@ -336,9 +328,8 @@ public abstract class DopamineBase {
 		JSONObject obj = new JSONObject();
 		try {
 
-			for (SimpleEntry<String, Object> entry : list) {
+			for (SimpleEntry<String, Object> entry : list)
 				obj.accumulate(entry.getKey(), entry.getValue());
-			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -346,7 +337,7 @@ public abstract class DopamineBase {
 
 		JSONArray array = new JSONArray();
 		Iterator<String> it = obj.keys();
-		while (it.hasNext()) {
+		while (it.hasNext())
 			try {
 				String[] name = { it.next() };
 				// create individual objects for each metadata key
@@ -354,7 +345,6 @@ public abstract class DopamineBase {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-		}
 
 		return array;
 	}
@@ -371,13 +361,11 @@ public abstract class DopamineBase {
 		for(DopamineAction action : actions){
 			builder.append(action.actionName);
 			
-			for (String feedback : action.feedbackFunctions) {
+			for (String feedback : action.feedbackFunctions)
 				builder.append(feedback);
-			}
 
-			for (String reward : action.rewardFunctions) {
+			for (String reward : action.rewardFunctions)
 				builder.append(reward);
-			}
 		}
 		build = sha1(builder.toString());
 		return build;

@@ -23,6 +23,9 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +38,9 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 	private static boolean memorySaverProcessorWaster = DopamineBase.getMemorySaverState();
 	public static enum Type {Tracking, Other};
 	Type type;
+	
+	private static final int timeoutConnection = 2000;
+	private static final int timeoutSocket = 5000;
 	
 	public String resultFunction, resultString, error = "", status;
 	public JSONArray arguments;
@@ -73,10 +79,12 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 			ctx = SSLContext.getInstance("TLS");
 			ctx.init(null, new TrustManager[] { new CustomX509TrustManager() }, new SecureRandom());
 
+			HttpParams httpParams = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
+			HttpConnectionParams.setSoTimeout(httpParams, timeoutSocket);
+			HttpClient httpClient = new DefaultHttpClient(httpParams);
 			
-			HttpClient httpClient = new DefaultHttpClient();
-
-
+			
 			SSLSocketFactory ssf = new CustomSSLSocketFactory(ctx);
 			ssf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 			ClientConnectionManager ccm = httpClient.getConnectionManager();
@@ -134,9 +142,8 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 		trackingQueueSize = trackingQueue.size();
 		FileManager.overwriteTrackingRequestLog(trackingQueue);
 		
-		if(memorySaverProcessorWaster){
+		if(memorySaverProcessorWaster)
 			trackingQueue = null;
-		}
 		trackingQueueLock.unlock();
 	}
 	
@@ -181,9 +188,8 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 			StringBuilder sBuilder = new StringBuilder();
 
 			String line = null;
-			while ((line = bReader.readLine()) != null) {
+			while ((line = bReader.readLine()) != null)
 				sBuilder.append(line + "\n");
-			}
 
 			inputStream.close();
 			
