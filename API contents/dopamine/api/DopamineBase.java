@@ -47,12 +47,12 @@ public abstract class DopamineBase {
 	private static ArrayList<SimpleEntry<String, Object>> metaData = new ArrayList<SimpleEntry<String,Object>>();
 	private static ArrayList<SimpleEntry<String, Object>> persistentMetaData = new ArrayList<SimpleEntry<String,Object>>();
 	private static String clientOS = "Android";
-	private static String clientOSversion = android.os.Build.VERSION.RELEASE;
+	private static int clientOSversion = android.os.Build.VERSION.SDK_INT;
 	private static String clientAPIversion = "1.1.0";
 
 	// JSON field names --> NAME_dataType
 	final static String CLIENTOS_string = "ClientOS";
-	final static String CLIENTOSVERSION_string = "ClientOSVersion";
+	final static String CLIENTOSVERSION_int = "ClientOSVersion";
 	final static String CLIENTAPIVERSION_string = "ClientAPIVersion";
 	final static String IDENTITY_keyvaluearray = "identity";
 	final static String KEY_string = "key";
@@ -166,7 +166,7 @@ public abstract class DopamineBase {
 		try {
 			
 			jsonObject.put(CLIENTOS_string, clientOS);
-			jsonObject.put(CLIENTOSVERSION_string, clientOSversion);
+			jsonObject.put(CLIENTOSVERSION_int, clientOSversion);
 			jsonObject.put(CLIENTAPIVERSION_string, clientAPIversion);
 			jsonObject.put(KEY_string, key);
 			jsonObject.put(TOKEN_string, token);
