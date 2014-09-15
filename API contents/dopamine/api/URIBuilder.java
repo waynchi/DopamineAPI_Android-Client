@@ -5,39 +5,36 @@ package com.dopamine.api;
  */
 public class URIBuilder {
 
-
-    String token;
-
-    public URIBuilder(String token) {
-        this.token = token;
+    private URIBuilder() {
     }
+    
+    // For Server dev
+//  private static final String uriBase = "https://staging.usedopamine.com/v2/app/";
+    private static final String uriBase = "https://api.usedopamine.com/v2/app/";
 
-    public static enum URI {
-        INIT,
-        TRACK,
-        REWARD
+    
+    private static StringBuffer baseURI(){
+    	StringBuffer sb = new StringBuffer(uriBase);
+    	sb.append(DopamineBase.appID);
+    	return sb;
     }
-
-//    private final String uri = "https://staging.usedopamine.com/v2/app/";
-    private final String uri = "https://api.usedopamine.com/v2/app/";
-
-
-    public  String getURI(URI type) {
-        switch(type) {
-            case  INIT:
-                return uri + token + "/init/";
-
-            case TRACK:
-                return uri + token + "/track/";
-
-            case REWARD:
-                return uri + token + "/reinforce/";
-
-        }
-        return "";
-
+    
+    protected static String getInitilizationURI(){
+    	StringBuffer sb = baseURI();
+    	sb.append("/init/");
+    	return sb.toString();
     }
-
-
-
+    
+    protected static String getTrackingURI(){
+    	StringBuffer sb = baseURI();
+    	sb.append("/track/");
+    	return sb.toString();
+    }
+    
+    protected static String getReinforcementURI(){
+    	StringBuffer sb = baseURI();
+    	sb.append("/reinforce/");
+    	return sb.toString();
+    }
+    
 }

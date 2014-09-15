@@ -7,7 +7,7 @@ import java.util.LinkedList;
 public class DopamineAction {
 	public final String actionName;
 	public String resultFunction;
-	public Object[] arguments;
+//	public Object[] arguments;
 	LinkedHashSet<String> rewardFunctions = new LinkedHashSet<String>();
 	LinkedHashSet<String> feedbackFunctions = new LinkedHashSet<String>();
 	
@@ -31,18 +31,20 @@ public class DopamineAction {
 	public String reinforce() {
 		Object[] resultAndArguments = DopamineBase.reinforce(this);
 		resultFunction = (String) resultAndArguments[0];
-		arguments = (Object[]) resultAndArguments[1];
+//		arguments = (Object[]) resultAndArguments[1];
 		
-		if(resultFunction.equals(DopamineRequest.NO_CONNECTION))
+		if(resultFunction.equals(DopamineRequest.NO_CONNECTION)) {
 			resultFunction = getDefaultFeedbackFunction();
+		}
 		
 		return resultFunction;
 	}
 	
 	LinkedList<String> getRewardFunctions(){
 		LinkedList<String> rf = new LinkedList<String>();
-		for(String s : rewardFunctions)
+		for(String s : rewardFunctions) {
 			rf.add(s);
+		}
 		Collections.sort(rf);
 		
 		return rf;
@@ -50,17 +52,17 @@ public class DopamineAction {
 	
 	LinkedList<String> getFeedbackFunctions(){
 		LinkedList<String> ff = new LinkedList<String>();
-		for(String s : feedbackFunctions)
+		for(String s : feedbackFunctions) {
 			ff.add(s);
+		}
 		Collections.sort(ff);
 		
 		return ff;
 	}
 	
 	String getDefaultFeedbackFunction(){
-		for(String s : feedbackFunctions){
+		for(String s : feedbackFunctions)
 			return s;
-		}
 		
 		// if no functions found
 		return null;

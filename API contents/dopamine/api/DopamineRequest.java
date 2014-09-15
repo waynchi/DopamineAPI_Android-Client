@@ -33,37 +33,57 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class DopamineRequest extends AsyncTask<String, Void, String> {
+public class DopamineRequest extends AsyncTask<Void, Void, String> {
 	public static final String NO_CONNECTION = "no internet connection";
 	private static boolean memorySaverProcessorWaster = DopamineBase.getMemorySaverState();
-	public static enum Type {Tracking, Other};
+	public static enum Type {Tracking, Reinforcement, Initilization};
 	Type type;
 	
 	private static final int timeoutConnection = 2000;
 	private static final int timeoutSocket = 5000;
 	
-	public String resultFunction, resultString, error = "", status;
-	public JSONArray arguments;
 	private static int trackingQueueSize = 0;
 	private static ReentrantLock trackingQueueLock = new ReentrantLock();
-	
 	private static Queue<String> trackingQueue = null;
+	
+	public String resultFunction, error = "", status;
+	private String url;
+	private JSONObject jsonRequest;
 
-	public DopamineRequest() {
-		type = Type.Other;
-	}
-	public DopamineRequest(Type t){
+	public DopamineRequest(Type t, JSONObject json){
 		type = t;
-		if(!memorySaverProcessorWaster && trackingQueue==null)
-			trackingQueue = FileManager.loggedTrackingRequestsTOqueue();
+		jsonRequest = json;
+		
+		switch(type){
+		case Initilization:
+			url = URIBuilder.getInitilizationURI();
+			DopamineBase.setDeviceID();
+			DopamineBase.setBuild();
+			jsonRequest = DopamineBase.getInitRequest();
+			break;
+		case Tracking:
+			url = URIBuilder.getTrackingURI();
+			if(!memorySaverProcessorWaster && trackingQueue==null) {
+				trackingQueue = FileManager.loggedTrackingRequestsTOqueue();
+			}
+			if(jsonRequest!=null) {
+				addTrackingRequest(jsonRequest);
+			}
+			break;
+		case Reinforcement:
+			url = URIBuilder.getReinforcementURI();
+			break;
+		}
+
 	}
 	
 	static void setMemorySaverProcessorWaster(boolean option){
 		memorySaverProcessorWaster = option;
-		if(memorySaverProcessorWaster)
+		if(memorySaverProcessorWaster) {
 			trackingQueue = null;
-		else
+		} else {
 			trackingQueue = FileManager.loggedTrackingRequestsTOqueue();
+		}
 	}
 	
 	static int getTrackingQueueSize(){
@@ -71,7 +91,7 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 	}
 
 	@Override
-	protected String doInBackground(String... params) {
+	protected String doInBackground(Void... params) {
 		
 		SSLContext ctx = null;
 		
@@ -92,32 +112,12 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 			sr.register(new Scheme("https", ssf, 443));
 
 			if(type==Type.Tracking){
-				// Tracking Call
-				trackingQueueLock.lock();
-				if(memorySaverProcessorWaster) trackingQueue = FileManager.loggedTrackingRequestsTOqueue();
-				if(params.length!=1) trackingQueue.add(params[1]);
-				while( !trackingQueue.isEmpty() ){
-					String jsonRequest = trackingQueue.peek();
-					boolean success = processHTTPpost(httpClient, params[0], jsonRequest);
-					if(success) trackingQueue.poll();
-					else{
-						// quit
-						FileManager.overwriteTrackingRequestLog(trackingQueue);
-						trackingQueueSize = trackingQueue.size();
-						if(memorySaverProcessorWaster) trackingQueue = null;
-						trackingQueueLock.unlock();
-						return resultFunction;	// not sure what to return, so reverted to default
-					}
-				}
-				// successfully sent all requests. overwrite with empty queue
-				FileManager.overwriteTrackingRequestLog(trackingQueue);
-				trackingQueueSize = trackingQueue.size();
-				if(memorySaverProcessorWaster) trackingQueue = null;
-				trackingQueueLock.unlock();
+				sendTrackingCall(httpClient);
 			}
+			
 			else{
-				// Reinforcement call
-				boolean success = processHTTPpost(httpClient, params[0], params[1]);
+				// Reinforcement or Init call
+				boolean success = processHTTPpost(httpClient, url, jsonRequest.toString());
 				if(!success) {
 					resultFunction = NO_CONNECTION;
 					return NO_CONNECTION;
@@ -131,19 +131,55 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 		return resultFunction;
     }
 	
-	static void addTrackingRequest(String trackingJSONrequest){
+	private String sendTrackingCall(HttpClient httpClient){
+		// Tracking Call
 		trackingQueueLock.lock();
-		if(trackingQueue == null)
-			trackingQueue = new LinkedList<String>();
-		if(memorySaverProcessorWaster)
+		if(memorySaverProcessorWaster) {
 			trackingQueue = FileManager.loggedTrackingRequestsTOqueue();
+		}
+		while( !trackingQueue.isEmpty() ){
+			String jsonRequest = trackingQueue.peek();
+			boolean success = processHTTPpost(httpClient, url, jsonRequest);
+			if(success) {
+				trackingQueue.poll();
+			} else{
+				// quit
+				FileManager.overwriteTrackingRequestLog(trackingQueue);
+				trackingQueueSize = trackingQueue.size();
+				if(memorySaverProcessorWaster) {
+					trackingQueue = null;
+				}
+				trackingQueueLock.unlock();
+				return resultFunction;	// not sure what to return, so reverted to default
+			}
+		}
+		// successfully sent all requests. overwrite with empty queue
+		FileManager.overwriteTrackingRequestLog(trackingQueue);
+		trackingQueueSize = trackingQueue.size();
+		if(memorySaverProcessorWaster) {
+			trackingQueue = null;
+		}
+		trackingQueueLock.unlock();
+		return resultFunction;
+	}
+	
+	static void addTrackingRequest(JSONObject trackingJSONrequest){
+		String jsonString = trackingJSONrequest.toString();
+		trackingQueueLock.lock();
+		if(trackingQueue == null) {
+			trackingQueue = new LinkedList<String>();
+		}
+		if(memorySaverProcessorWaster) {
+			trackingQueue = FileManager.loggedTrackingRequestsTOqueue();
+		}
 		
-		trackingQueue.add(trackingJSONrequest);
+		trackingQueue.add(jsonString);
 		trackingQueueSize = trackingQueue.size();
 		FileManager.overwriteTrackingRequestLog(trackingQueue);
 		
-		if(memorySaverProcessorWaster)
+		if(memorySaverProcessorWaster) {
 			trackingQueue = null;
+		}
 		trackingQueueLock.unlock();
 	}
 	
@@ -188,12 +224,13 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 			StringBuilder sBuilder = new StringBuilder();
 
 			String line = null;
-			while ((line = bReader.readLine()) != null)
+			while ((line = bReader.readLine()) != null) {
 				sBuilder.append(line + "\n");
+			}
 
 			inputStream.close();
 			
-			resultString = sBuilder.toString();
+			String resultString = sBuilder.toString();
 			this.processResponse(resultString);
 
 		} catch (Exception e) {
@@ -206,32 +243,30 @@ public class DopamineRequest extends AsyncTask<String, Void, String> {
 	
 	private void processResponse(String response) throws JSONException{
 		JSONObject jsonResponse = new JSONObject(response);
-		if(DopamineBase.debugMode) System.out.println("\nResulting JSON:" + jsonResponse.toString(2));
-		
-		if(jsonResponse.has("reinforcementFunction"))
-			resultFunction = jsonResponse.getString("reinforcementFunction");
-		else
-			resultFunction = "";
-		
-		if(jsonResponse.has("reinforcementArguments")){
-			String array = jsonResponse.getString("reinforcementArguments");
-			arguments = new JSONArray(array);
+		if(DopamineBase.debugMode) {
+			System.out.println("\nResulting JSON:" + jsonResponse.toString(2));
 		}
-		else
-			arguments = new JSONArray();
+		
+		if(jsonResponse.has("reinforcementFunction")) {
+			resultFunction = jsonResponse.getString("reinforcementFunction");
+		} else {
+			resultFunction = "";
+		}
 		
 		if(jsonResponse.has("error")){
 			JSONArray array = new JSONArray(jsonResponse.getString("error"));
-			if(array.length() > 0)
+			if(array.length() > 0) {
 				error = array.toString();
-		}
-		else
+			}
+		} else {
 			error = "";
+		}
 		
-		if(jsonResponse.has("status"))
+		if(jsonResponse.has("status")) {
 			status = jsonResponse.getString("status");
-		else
+		} else {
 			status = "";
+		}
 		
 		return;
 	}
