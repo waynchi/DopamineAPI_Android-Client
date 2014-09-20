@@ -50,7 +50,7 @@ public abstract class DopamineBase {
 	private static ArrayList<SimpleEntry<String, Object>> persistentMetaData = new ArrayList<SimpleEntry<String,Object>>();
 	private static String clientOS = "Android";
 	private static int clientOSversion = android.os.Build.VERSION.SDK_INT;
-	private static String clientAPIversion = "1.1.0";
+	private static String clientAPIversion = "1.2.0";
 
 	// JSON field names --> NAME_dataType
 	final static String CLIENTOS_string = "ClientOS";
@@ -495,6 +495,19 @@ public abstract class DopamineBase {
 	
 	
 	protected static void setDeviceID() {
+		
+//		System.out.println("Class: " + Thread.currentThread().getClass());
+//		System.out.println("Name: " + Thread.currentThread().getName());
+		
+//		String t = "";
+//		for(int j = 0; j < 100; j ++){
+//			char c = 'A';
+//			for(int i = 0; i < 26; i++) {
+//				t+=c++;
+//				t = t.toLowerCase(Locale.ENGLISH);
+//			}
+//		}
+//		System.out.println(t);
 
 		/*String Return_DeviceID = USERNAME_and_PASSWORD.getString(DeviceID_key,"Guest");
 		return Return_DeviceID;*/

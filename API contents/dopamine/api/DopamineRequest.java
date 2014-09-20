@@ -51,15 +51,13 @@ public class DopamineRequest extends AsyncTask<Void, Void, String> {
 	private JSONObject jsonRequest;
 
 	public DopamineRequest(Type t, JSONObject json){
+//		System.out.println("Async Class: " + Thread.currentThread().getClass());
+//		System.out.println("Async Name: " + Thread.currentThread().getName());
 		type = t;
 		jsonRequest = json;
-		
 		switch(type){
 		case Initilization:
 			url = URIBuilder.getInitilizationURI();
-			DopamineBase.setDeviceID();
-			DopamineBase.setBuild();
-			jsonRequest = DopamineBase.getInitRequest();
 			break;
 		case Tracking:
 			url = URIBuilder.getTrackingURI();
@@ -92,6 +90,12 @@ public class DopamineRequest extends AsyncTask<Void, Void, String> {
 
 	@Override
 	protected String doInBackground(Void... params) {
+		
+		if(type==Type.Initilization){
+			DopamineBase.setDeviceID();
+			DopamineBase.setBuild();
+			jsonRequest = DopamineBase.getInitRequest();
+		}
 		
 		SSLContext ctx = null;
 		
