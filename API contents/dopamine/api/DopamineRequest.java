@@ -92,7 +92,7 @@ public class DopamineRequest extends AsyncTask<Void, Void, String> {
 	protected String doInBackground(Void... params) {
 		
 		if(type==Type.Initilization){
-			DopamineBase.setDeviceID();
+//			DopamineBase.setDeviceID();
 			DopamineBase.setBuild();
 			jsonRequest = DopamineBase.getInitRequest();
 		}
