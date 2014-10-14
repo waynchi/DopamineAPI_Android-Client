@@ -1,7 +1,6 @@
 package com.dopamine.dummy;
 
 import android.content.Context;
-import android.os.Debug;
 
 import com.dopamine.api.DopamineAction;
 import com.dopamine.api.DopamineBase;
@@ -22,7 +21,7 @@ public class MyDopamine extends DopamineBase {
 	
 	
 	public static void init(Context c){
-		Debug.startMethodTracing("DopamineInitTest7");
+//		Debug.startMethodTracing("DopamineInitTest7");
 		// Set Credentials
 		appID = "53bf3dfbf572f3b63ee628de";
 		versionID = "DopamineDummy5";
@@ -45,7 +44,7 @@ public class MyDopamine extends DopamineBase {
 		
 		// Initialize base
 		initBase(c);
-		Debug.stopMethodTracing();
+//		Debug.stopMethodTracing();
 
 	}
 }

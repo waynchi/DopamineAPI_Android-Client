@@ -8,10 +8,10 @@
         android:minSdkVersion="11"
         android:targetSdkVersion="21" />
     
-    <!-- For sending and receiving HTTP calls -->
+    <!-- Only necessary permission!! Needed for sending and receiving HTTP calls -->
     <uses-permission android:name="android.permission.INTERNET" />
     
-    <!-- For saving tracking calls to send at a later time -->
+    <!-- For debugging purposes -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
