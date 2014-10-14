@@ -46,7 +46,7 @@ public abstract class DopamineBase {
 	private static ArrayList<SimpleEntry<String, Object>> persistentMetaData = new ArrayList<SimpleEntry<String,Object>>();
 	private static String clientOS = "Android";
 	private static int clientOSversion = android.os.Build.VERSION.SDK_INT;
-	private static String clientAPIversion = "1.2.0";
+	private static String clientAPIversion = "1.2.1";
 
 	// JSON field names --> NAME_dataType
 	final static String CLIENTOS_string = "ClientOS";
